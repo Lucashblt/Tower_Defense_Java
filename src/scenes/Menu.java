@@ -44,7 +44,6 @@ public class Menu extends GameScene implements SceneMethods {
                 sprites.add(img.getSubimage(32*x, 32*y, 32, 32));
             }
         }
-
     }
 
     private void importImg() {
