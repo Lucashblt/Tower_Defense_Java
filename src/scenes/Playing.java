@@ -5,29 +5,26 @@ import java.awt.Graphics;
 import helper.LevelBuild;
 import main.Game;
 import managers.TileManager;
-import ui.MyButton;
-import static main.GameStates.*;
+import ui.ActionBar;
 
 public class Playing extends GameScene implements SceneMethods {
 
     private int[][] level;
     private TileManager tileManager;
-    private MyButton bMenu;
+    private ActionBar actionBar;
+    private int mouseX, mouseY;
 
     public Playing(Game game) {
         super(game);
 
         level = LevelBuild.getLevelData();
         tileManager = new TileManager();
+        actionBar = new ActionBar(0, 640, 640, 100, this);
         initButtons();
     }
  
     private void initButtons() {
-        int w = 100;
-        int h = 32;
-        int x = 10;
-        int y = 10;
-        bMenu = new MyButton("MENU", x, y, w, h);
+
     }
 
 
@@ -39,32 +36,31 @@ public class Playing extends GameScene implements SceneMethods {
                 g.drawImage(tileManager.getSprite(id), x * 32, y * 32, null);
             }
         }
-        // UI overlay
-        bMenu.draw(g);
+        actionBar.draw(g);
     }
 
     @Override
     public void mouseClicked(int x, int y) {
-        if (bMenu.getBounds().contains(x, y)) {
-            setGameState(MENU);
-        }
+        if (y >= 640)
+			actionBar.mouseClicked(x, y);
     }
 
     @Override
     public void mouseMoved(int x, int y) {
-        bMenu.setMouseOver(false);
-        if (bMenu.getBounds().contains(x, y)) {
-            bMenu.setMouseOver(true);
-        }
+        if (y >= 640)
+            actionBar.mouseMoved(x, y);
+        else {
+			mouseX = (x / 32) * 32;
+			mouseY = (y / 32) * 32;
+		}
     }  
     @Override
     public void mousePressed(int x, int y) {
-        if (bMenu.getBounds().contains(x, y)) {
-            bMenu.setMousePressed(true);
-        }
+        if (y >= 640)
+            actionBar.mousePressed(x, y);
     }  
     @Override
     public void mouseReleased(int x, int y) {
-        bMenu.resetBooleans();
+        actionBar.mouseReleased(x, y);
     }
 }

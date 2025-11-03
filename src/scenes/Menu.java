@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -16,7 +15,7 @@ import static main.GameStates.*;
 
 public class Menu extends GameScene implements SceneMethods {
 
-    private BufferedImage img;
+    private BufferedImage img, menuImg;
     
     private ArrayList<BufferedImage> sprites = new ArrayList<BufferedImage>();
 
@@ -34,8 +33,8 @@ public class Menu extends GameScene implements SceneMethods {
         int w = 150;
         int h = w / 3;
         int x = 640 / 2 - w / 2;
-        int y = 150;
-        int yOffset = 100;
+        int y = 350;
+        int yOffset = 75;
 
         bPlaying = new MyButton("PLAY", x, y, w, h);
         bSettings = new MyButton("SETTINGS", x, y + yOffset, w, h);
@@ -44,6 +43,8 @@ public class Menu extends GameScene implements SceneMethods {
 
     @Override
     public void render(Graphics g) {
+        g.drawImage(menuImg, 0, 0, null);
+
         bPlaying.draw(g);
         bSettings.draw(g);
         bQuit.draw(g);
@@ -105,22 +106,42 @@ public class Menu extends GameScene implements SceneMethods {
     }
 
     private void importImg() {
-		InputStream is = getClass().getResourceAsStream("/spriteatlas.png");
+        // load sprite atlas
+        InputStream is = getClass().getResourceAsStream("/spriteatlas2.png");
+        if (is == null) {
+            try {
+                is = new FileInputStream("res/spriteatlas2.png");
+            } catch (FileNotFoundException e) {
+                is = null;
+            }
+        }
+        try {
+            if (is != null) {
+                img = ImageIO.read(is);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { if (is != null) is.close(); } catch (Exception ignore) {}
+        }
 
-		// If not found on the classpath, try loading from a common 'res' folder on the filesystem (useful for simple setups)
-		if (is == null) {
-			try {
-				is = new FileInputStream("res/spriteatlas.png");
-			} catch (FileNotFoundException e) {
-			}
-		}
-
-		try {
-			img = ImageIO.read(is);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { is.close(); } catch (Exception ignore) {}
-		}
-	}
+        // load menu background image (menuimg.png) from same locations
+        InputStream is2 = getClass().getResourceAsStream("/menuimg.png");
+        if (is2 == null) {
+            try {
+                is2 = new FileInputStream("res/menuimg.png");
+            } catch (FileNotFoundException e) {
+                is2 = null;
+            }
+        }
+        try {
+            if (is2 != null) {
+                menuImg = ImageIO.read(is2);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { if (is2 != null) is2.close(); } catch (Exception ignore) {}
+        }
+    }
 }

@@ -2,11 +2,9 @@ package main;
 
 import javax.swing.JFrame;
 
-import inputs.MyMouseListener;
 import scenes.Menu;
 import scenes.Playing;
 import scenes.Settings;
-import inputs.KeyboardListener;
 
 public class Game extends JFrame implements Runnable {
 

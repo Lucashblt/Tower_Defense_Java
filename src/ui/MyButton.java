@@ -3,6 +3,7 @@ package ui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Font;
 
 public class MyButton {
 
@@ -10,6 +11,12 @@ public class MyButton {
     private String text;     
     private Rectangle bounds;
     private boolean mouseOver, mousePressed;
+
+    private final Color baseColor = new Color(85, 60, 40);     
+    private final Color hoverColor = new Color(115, 90, 60);   
+    private final Color pressedColor = new Color(65, 45, 30);
+    private final Color borderColor = new Color(30, 20, 10);
+    private final Color textColor = new Color(240, 220, 180);
 
     public MyButton(String text, int x, int y, int width, int height) {
         this.x = x;
@@ -31,30 +38,32 @@ public class MyButton {
         drawText(g);
     }
 
-    private void drawBody(Graphics g){
-        if (mouseOver) {
-            g.setColor(Color.GRAY);
+    private void drawBody(Graphics g) {
+        if (mousePressed) {
+            g.setColor(pressedColor);
+        } else if (mouseOver) {
+            g.setColor(hoverColor);
         } else {
-            g.setColor(Color.WHITE);
+            g.setColor(baseColor);
         }
         g.fillRect(x, y, width, height);
     }
 
-    private void drawBorder(Graphics g){
-        g.setColor(Color.BLACK);
+    private void drawBorder(Graphics g) {
+        g.setColor(borderColor);
         g.drawRect(x, y, width, height);
-        if( mousePressed ) {
-            g.drawRect(x + 1, y + 1, width -2, height -2);
-            g.drawRect(x + 2, y + 2, width -4, height -4);
-        }
+        g.drawRect(x + 1, y + 1, width - 2, height - 2);
     }
 
-    private void drawText(Graphics g){
-        int w = g.getFontMetrics().stringWidth(text);
-        int h = g.getFontMetrics().getHeight();
-        g.drawString(text, x + (width - w) / 2, y + (height + h) / 2);
-    }
+    private void drawText(Graphics g) {
+        g.setFont(new Font("Monospaced", Font.BOLD, 20));
+        g.setColor(textColor);
 
+        int textWidth = g.getFontMetrics().stringWidth(text);
+        int textHeight = g.getFontMetrics().getAscent();
+
+        g.drawString(text, x + (width - textWidth) / 2, y + (height + textHeight) / 2 - 3);
+    }
     public void resetBooleans() {
         this.mouseOver = false;
         this.mousePressed = false;
