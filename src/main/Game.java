@@ -8,25 +8,40 @@ import java.io.FileNotFoundException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import inputs.MyMouseListener;
+import inputs.KeyboardListener;
+
 public class Game extends JFrame implements Runnable {
 
 	private GameScreen gameScreen;
-	private BufferedImage img;
 	private Thread gameThread;
 
 	private final double FPS_SET = 120.0;
 	private final double UPS_SET = 60.0;
 
-	public Game() {
-		importImg();
+	private MyMouseListener myMouseListener;
+	private KeyboardListener keyboardListener;
 
-		setSize(640, 640);		
+	public Game() {	
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
 
-		gameScreen = new GameScreen(img);
+		gameScreen = new GameScreen(this);
 		add(gameScreen);
+		pack();
+		setLocationRelativeTo(null);
+		
 		setVisible(true);
+	}
+
+	private void initInputs() {
+		myMouseListener = new MyMouseListener();
+		keyboardListener = new KeyboardListener();
+
+		this.addMouseListener(myMouseListener);
+		this.addMouseMotionListener(myMouseListener);
+		this.addKeyListener(keyboardListener);
+
+		requestFocus();
 	}
 
 	private void start() {
@@ -38,28 +53,10 @@ public class Game extends JFrame implements Runnable {
 		// Game logic updates would go here
 	}
 
-	private void importImg() {
-		InputStream is = getClass().getResourceAsStream("/spriteatlas.png");
-
-		// If not found on the classpath, try loading from a common 'res' folder on the filesystem (useful for simple setups)
-		if (is == null) {
-			try {
-				is = new FileInputStream("res/spriteatlas.png");
-			} catch (FileNotFoundException e) {
-			}
-		}
-
-		try {
-			img = ImageIO.read(is);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { is.close(); } catch (Exception ignore) {}
-		}
-	}
 
 	public static void main(String[] args) {
 		Game game = new Game();
+		game.initInputs();
 		game.start();
 	}
 
@@ -77,17 +74,18 @@ public class Game extends JFrame implements Runnable {
 
 		while (true) {
 
+			long now = System.nanoTime();
 			//FPS
-			if(System.nanoTime() - lastFrame >= timePerFrame) {
+			if(now - lastFrame >= timePerFrame) {
 				repaint();
-				lastFrame = System.nanoTime();
+				lastFrame = now;
 				frames++;
 			}
 
 			//UPS
-			if (System.nanoTime() - lastUpdate >= timePerUpdate) {
+			if (now - lastUpdate >= timePerUpdate) {
 				updateGame();
-				lastUpdate = System.nanoTime();
+				lastUpdate = now;
 				updates++;
 			}
 
