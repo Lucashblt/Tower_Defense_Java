@@ -28,5 +28,22 @@ public class Playing extends GameScene implements SceneMethods {
             }
         }
     }
-    
+
+    @Override
+    public void mouseClicked(int x, int y) {
+        // Handle mouse click events in the playing scene
+    }
+
+    @Override
+    public void mouseMoved(int x, int y) {
+        // Handle mouse movement events in the playing scene
+    }  
+    @Override
+    public void mousePressed(int x, int y) {
+        // Handle mouse press events in the playing scene
+    }  
+    @Override
+    public void mouseReleased(int x, int y) {
+        // Handle mouse release events in the playing scene
+    }
 }
