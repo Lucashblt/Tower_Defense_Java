@@ -1,14 +1,11 @@
 package main;
 
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import inputs.MyMouseListener;
+import scenes.Menu;
+import scenes.Playing;
+import scenes.Settings;
 import inputs.KeyboardListener;
 
 public class Game extends JFrame implements Runnable {
@@ -21,16 +18,31 @@ public class Game extends JFrame implements Runnable {
 
 	private MyMouseListener myMouseListener;
 	private KeyboardListener keyboardListener;
+	
+	//Classes
+    private Render render;
+	private Menu menu;
+	private Settings settings;
+	private Playing playing;
 
 	public Game() {	
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		gameScreen = new GameScreen(this);
+		initClasses();
+
 		add(gameScreen);
 		pack();
 		setLocationRelativeTo(null);
 		
 		setVisible(true);
+	}
+
+	private void initClasses() {
+		gameScreen = new GameScreen(this);
+		render = new Render(this);
+		menu = new Menu(this);
+		settings = new Settings(this);
+		playing = new Playing(this);
 	}
 
 	private void initInputs() {
@@ -96,5 +108,22 @@ public class Game extends JFrame implements Runnable {
 				lastTimeCheck = System.currentTimeMillis();	
 			}
 		}
+	}
+
+	// Getters and Setters
+	public Render getRender() {
+		return render;
+	}
+
+	public Playing getPlaying() {
+		return playing;
+	}
+
+	public Menu getMenu() {
+		return menu;
+	}
+
+	public Settings getSettings() {
+		return settings;
 	}
 }

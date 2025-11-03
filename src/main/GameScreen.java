@@ -8,12 +8,10 @@ import javax.swing.JPanel;
 public class GameScreen  extends JPanel{
 
     private Dimension size;
-    private Render render;
     private Game game;
 
     public GameScreen(Game game) {
         this.game = game;
-        render = new Render(this);
         setPreferredSize();    
     }
 
@@ -26,7 +24,7 @@ public class GameScreen  extends JPanel{
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
-        render .render(g);
+
+        game.getRender().render(g);
     }
 }
