@@ -4,6 +4,7 @@ import java.awt.Graphics;
 
 import helper.LevelBuild;
 import main.Game;
+import managers.EnemyManager;
 import managers.TileManager;
 import ui.ActionBar;
 
@@ -11,6 +12,7 @@ public class Playing extends GameScene implements SceneMethods {
 
     private int[][] level;
     private TileManager tileManager;
+    private EnemyManager enemyManager;
     private ActionBar actionBar;
     private int mouseX, mouseY;
 
@@ -20,6 +22,7 @@ public class Playing extends GameScene implements SceneMethods {
         level = LevelBuild.getLevelData();
         tileManager = new TileManager();
         actionBar = new ActionBar(0, 640, 640, 100, this);
+        enemyManager = new EnemyManager(this);
         initButtons();
     }
  
@@ -27,11 +30,15 @@ public class Playing extends GameScene implements SceneMethods {
 
     }
 
+    public void update() {
+        enemyManager.update();
+    }
 
     @Override
     public void render(Graphics g) {
         drawLevel(g);
         actionBar.draw(g);
+        enemyManager.draw(g);
     }
 
     private void drawLevel(Graphics g) {
