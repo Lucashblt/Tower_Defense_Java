@@ -1,5 +1,7 @@
 package helper;
 
+import objects.PathPoint;
+
 public class LevelBuild {
  
     
@@ -31,5 +33,29 @@ public class LevelBuild {
         };
 
         return lvl;
+    }
+
+    public static PathPoint getStartPoint() {
+        int[][] lvl = getLevelData();
+        for (int y = 0; y < lvl.length; y++) {
+            for (int x = 0; x < lvl[y].length; x++) {
+                if (lvl[y][x] == 20) {
+                    return new PathPoint(x, y);
+                }
+            }
+        }
+        return null;
+    }
+
+    public static PathPoint getEndPoint() {
+        int[][] lvl = getLevelData();
+        for (int y = 0; y < lvl.length; y++) {
+            for (int x = 0; x < lvl[y].length; x++) {
+                if (lvl[y][x] == 21) {
+                    return new PathPoint(x, y);
+                }
+            }
+        }
+        return null;
     }
 }

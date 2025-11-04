@@ -4,6 +4,7 @@ import scenes.Playing;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import enemies.Bat;
@@ -12,6 +13,9 @@ import enemies.Knight;
 import enemies.Orc;
 import enemies.Wolf;
 import helper.LoadSave;
+import objects.PathPoint;
+import objects.Tile;
+
 import static helper.Constants.Directions.*;
 import static helper.Constants.Tiles.*;
 import static helper.Constants.Enemies.*;
@@ -22,14 +26,17 @@ public class EnemyManager {
     private BufferedImage[] enemyImgs;
     private ArrayList<Enemy> enemies = new ArrayList<>();
     private float speed = 0.5f;
+    private PathPoint start, end;
 
-    public EnemyManager(Playing playing) {
+    public EnemyManager(Playing playing, PathPoint start, PathPoint end) {
         this.playing = playing;
+        this.start = start;
+        this.end = end;
         enemyImgs = new BufferedImage[4];
-        addEnemy(0 * 32, 19 * 32, ORC);
-        addEnemy(0 * 32, 19 * 32, WOLF);
-        addEnemy(0 * 32, 19 * 32, BAT);
-        addEnemy(0 * 32, 19 * 32, KNIGHT);
+        addEnemy(ORC);
+        addEnemy(WOLF);
+        addEnemy(BAT);
+        addEnemy(KNIGHT);
         loadEnemyImgs();
     }
 
@@ -42,7 +49,9 @@ public class EnemyManager {
         }
     }
 
-    public void addEnemy(int x, int y, int enemyType) {
+    public void addEnemy(int enemyType) {
+        int x = start.getxCord() * 32;
+        int y = start.getyCord() * 32;
         switch (enemyType) {
             case ORC:
                 enemies.add(new Orc(x, y, 0));
@@ -78,6 +87,7 @@ public class EnemyManager {
             e.move(speed, e.getLastDir());
         }else if(isAtEnd(e)) {
             //enemy reached the end
+            System.err.println("Enemy reached the end");
         } else {
             setNewDirectionAndMove(e);
         }
@@ -94,6 +104,9 @@ public class EnemyManager {
         int yCord = (int)(e.getY() / 32);
 
         fixEnemyPosition(e, dir, xCord, yCord);
+
+        if(isAtEnd(e))
+            return;
 
         if (dir == LEFT || dir == RIGHT) {
             int newY = (int)(e.getY() + getSpeedYAndHeight(UP));
@@ -131,6 +144,9 @@ public class EnemyManager {
     }
 
     private boolean isAtEnd(Enemy e) {
+        if (e.getX() == end.getxCord() && e.getY() == end.getyCord()) {
+            return true;
+        }
         return false;
     }
 

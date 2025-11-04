@@ -1,11 +1,13 @@
 package scenes;
 
 import java.awt.Graphics;
+import java.nio.file.Path;
 
 import helper.LevelBuild;
 import main.Game;
 import managers.EnemyManager;
 import managers.TileManager;
+import objects.PathPoint;
 import ui.ActionBar;
 
 public class Playing extends GameScene implements SceneMethods {
@@ -14,15 +16,17 @@ public class Playing extends GameScene implements SceneMethods {
     private TileManager tileManager;
     private EnemyManager enemyManager;
     private ActionBar actionBar;
+    private PathPoint start, end;
     private int mouseX, mouseY;
 
     public Playing(Game game) {
         super(game);
-
         level = LevelBuild.getLevelData();
+        start = LevelBuild.getStartPoint();
+        end = LevelBuild.getEndPoint();
         tileManager = new TileManager();
         actionBar = new ActionBar(0, 640, 640, 100, this);
-        enemyManager = new EnemyManager(this);
+        enemyManager = new EnemyManager(this, start, end);
         initButtons();
     }
  
