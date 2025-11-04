@@ -6,12 +6,12 @@ public class Tile {
     
     private BufferedImage sprite;
     private int id;
-    private String name;
+    private int tileType;
 
-    public Tile (BufferedImage sprite, int id, String name) {
+    public Tile (BufferedImage sprite, int id, int tileType) {
         this.sprite = sprite;
         this.id = id;
-        this.name = name;
+        this.tileType = tileType;
     }   
 
     public BufferedImage getSprite() {
@@ -22,7 +22,7 @@ public class Tile {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public int getTileType() {
+        return tileType;
     }
 }

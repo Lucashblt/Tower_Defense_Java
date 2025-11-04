@@ -7,7 +7,7 @@ import java.awt.Font;
 
 public class MyButton {
 
-    private int x, y, width, height;
+    public int x, y, width, height;
     private String text;     
     private Rectangle bounds;
     private boolean mouseOver, mousePressed;
@@ -68,6 +68,14 @@ public class MyButton {
         this.mouseOver = false;
         this.mousePressed = false;
     }
+
+    public boolean isMouseOver() {
+		return mouseOver;
+	}
+
+	public boolean isMousePressed() {
+		return mousePressed;
+	}
 
     public void setMouseOver(boolean mouseOver) {
         this.mouseOver = mouseOver;

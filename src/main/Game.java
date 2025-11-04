@@ -2,6 +2,7 @@ package main;
 
 import javax.swing.JFrame;
 
+import managers.TileManager;
 import scenes.Menu;
 import scenes.Playing;
 import scenes.Settings;
@@ -19,6 +20,7 @@ public class Game extends JFrame implements Runnable {
 	private Menu menu;
 	private Settings settings;
 	private Playing playing;
+	private TileManager tileManager;
 
 	public Game() {	
 		initClasses();
@@ -33,6 +35,7 @@ public class Game extends JFrame implements Runnable {
 	}
 
 	private void initClasses() {
+		tileManager = new TileManager();
 		gameScreen = new GameScreen(this);
 		render = new Render(this);
 		menu = new Menu(this);
@@ -121,5 +124,9 @@ public class Game extends JFrame implements Runnable {
 
 	public Settings getSettings() {
 		return settings;
+	}
+
+	public TileManager getTileManager() {
+		return tileManager;
 	}
 }

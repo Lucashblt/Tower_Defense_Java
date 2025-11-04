@@ -2,6 +2,8 @@ package enemies;
 
 import java.awt.Rectangle;
 
+import static helper.Constants.Directions.*;
+
 public class Enemy {
 
     private float x, y;
@@ -15,11 +17,37 @@ public class Enemy {
         this.ID = ID;
         this.enemyType = enemyType;
         bounds = new Rectangle((int)x, (int)y, 32, 32);
+        lastDir = RIGHT;
     }
 
-    public void move(float x, float y) {
-        this.x += x;
-        this.y += y;
+    public void move(float speed, int dir) {
+        switch (dir) {
+            case LEFT:
+                this.x -= speed;
+                lastDir = LEFT;
+                break;
+            case RIGHT:
+                this.x += speed;
+                lastDir = RIGHT;
+                break;
+            case UP:
+                this.y -= speed;
+                lastDir = UP;
+                break;
+            case DOWN:
+                this.y += speed;
+                lastDir = DOWN;
+                break;
+        
+            default:
+                break;
+        }
+    }
+
+    public void setPosition(int x, int y) {
+        //This is for position correction
+        this.x = x;
+        this.y = y;
     }
 
     public float getX() {
