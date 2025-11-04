@@ -12,12 +12,12 @@ public class LoadSave {
     public static BufferedImage getSpriteAtlas() {
         BufferedImage img = null;
 
-        InputStream is = LoadSave.class.getClassLoader().getResourceAsStream("spriteatlas2.png");
+        InputStream is = LoadSave.class.getClassLoader().getResourceAsStream("spriteatlas.png");
 
 		// If not found on the classpath, try loading from a common 'res' folder on the filesystem (useful for simple setups)
 		if (is == null) {
 			try {
-				is = new FileInputStream("res/spriteatlas2.png");
+				is = new FileInputStream("res/spriteatlas.png");
 			} catch (FileNotFoundException e) {
 			}
 		}

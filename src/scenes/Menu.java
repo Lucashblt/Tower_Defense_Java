@@ -107,10 +107,10 @@ public class Menu extends GameScene implements SceneMethods {
 
     private void importImg() {
         // load sprite atlas
-        InputStream is = getClass().getResourceAsStream("/spriteatlas2.png");
+        InputStream is = getClass().getResourceAsStream("/spriteatlas.png");
         if (is == null) {
             try {
-                is = new FileInputStream("res/spriteatlas2.png");
+                is = new FileInputStream("res/spriteatlas.png");
             } catch (FileNotFoundException e) {
                 is = null;
             }
