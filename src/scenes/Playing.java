@@ -30,13 +30,17 @@ public class Playing extends GameScene implements SceneMethods {
 
     @Override
     public void render(Graphics g) {
+        drawLevel(g);
+        actionBar.draw(g);
+    }
+
+    private void drawLevel(Graphics g) {
         for ( int y = 0; y < level.length; y++) {
             for ( int x = 0; x < level[y].length; x++) {
                 int id = level[y][x];
                 g.drawImage(tileManager.getSprite(id), x * 32, y * 32, null);
             }
         }
-        actionBar.draw(g);
     }
 
     @Override
