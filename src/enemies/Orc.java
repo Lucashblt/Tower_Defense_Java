@@ -1,8 +1,10 @@
 package enemies;
 
+import static helper.Constants.Enemies.*;
+
 public class Orc extends Enemy {
 
-    public Orc(float x, float y, int health, int ID, int enemyType) {
-        super(x, y, health, ID, enemyType);
+    public Orc(float x, float y, int ID) {
+        super(x, y, ID, ORC);
     }    
 }

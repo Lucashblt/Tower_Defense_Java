@@ -6,10 +6,15 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import enemies.Bat;
 import enemies.Enemy;
+import enemies.Knight;
+import enemies.Orc;
+import enemies.Wolf;
 import helper.LoadSave;
 import static helper.Constants.Directions.*;
 import static helper.Constants.Tiles.*;
+import static helper.Constants.Enemies.*;
 
 public class EnemyManager {
     
@@ -21,7 +26,10 @@ public class EnemyManager {
     public EnemyManager(Playing playing) {
         this.playing = playing;
         enemyImgs = new BufferedImage[4];
-        addEnemy(0 * 32, 19 * 32);
+        addEnemy(0 * 32, 19 * 32, ORC);
+        addEnemy(0 * 32, 19 * 32, WOLF);
+        addEnemy(0 * 32, 19 * 32, BAT);
+        addEnemy(0 * 32, 19 * 32, KNIGHT);
         loadEnemyImgs();
     }
 
@@ -34,8 +42,23 @@ public class EnemyManager {
         }
     }
 
-    public void addEnemy(int x, int y) {
-        enemies.add(new Enemy(x, y, 100, 0, 0));
+    public void addEnemy(int x, int y, int enemyType) {
+        switch (enemyType) {
+            case ORC:
+                enemies.add(new Orc(x, y, 0));
+                break;
+            case WOLF:
+                enemies.add(new Wolf(x, y, 0));
+                break;
+            case BAT:
+                enemies.add(new Bat(x, y, 0));
+                break;
+            case KNIGHT:
+                enemies.add(new Knight(x, y, 0));
+                break;
+            default:
+                break;
+        }
     }
 
     public void update() {
@@ -45,6 +68,9 @@ public class EnemyManager {
     }
 
     public void updateEnemyMove(Enemy e) {
+        if(e.getLastDir() == -1)
+            setNewDirectionAndMove(e);
+
         int newX = (int)(e.getX() + getSpeedXAndWidth(e.getLastDir()));
         int newY = (int)(e.getY() + getSpeedYAndHeight(e.getLastDir()));
 
@@ -88,14 +114,6 @@ public class EnemyManager {
 
     private void fixEnemyPosition(Enemy e, int dir, int xCord, int yCord) {
         switch (dir) {
-            // case LEFT:
-            //     if(xCord > 0)
-            //         xCord--;
-            //     break;
-            // case UP:
-            //     if(yCord > 0)
-            //         yCord--;
-            //     break;
             case RIGHT:    
                 if (xCord < 19) {
                     xCord++;

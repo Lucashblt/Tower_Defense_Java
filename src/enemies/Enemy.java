@@ -4,11 +4,20 @@ import java.awt.Rectangle;
 
 import static helper.Constants.Directions.*;
 
-public class Enemy {
+public abstract class Enemy {
 
     private float x, y;
     private Rectangle bounds;
     private int health, ID, enemyType, lastDir;
+
+    public Enemy(float x, float y, int ID, int enemyType) {
+        this.x = x;
+        this.y = y;
+        this.ID = ID;
+        this.enemyType = enemyType;
+        bounds = new Rectangle((int)x, (int)y, 32, 32);
+        lastDir = -1;
+    }
 
     public Enemy(float x, float y, int health, int ID, int enemyType) {
         this.x = x;

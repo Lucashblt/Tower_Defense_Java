@@ -11,7 +11,7 @@ import objects.Tile;
 public class TileManager {
     
 	public Tile GRASS, WATER, ROAD_LR, ROAD_TB, ROAD_B_TO_R, ROAD_L_TO_B, ROAD_L_TO_T, ROAD_T_TO_R, BL_WATER_CORNER, TL_WATER_CORNER, TR_WATER_CORNER, BR_WATER_CORNER, T_WATER, R_WATER, B_WATER,
-			L_WATER, TL_ISLE, TR_ISLE, BR_ISLE, BL_ISLE;
+			L_WATER, TL_ISLE, TR_ISLE, BR_ISLE, BL_ISLE, START_PATH, END_PATH;
 
     public BufferedImage atlas;
     public ArrayList<Tile> tiles = new ArrayList<>();
@@ -61,6 +61,9 @@ public class TileManager {
 		tiles.addAll(corners);
 		tiles.addAll(beaches);
 		tiles.addAll(islands);
+
+        tiles.add(START_PATH = new Tile(ImgFix.getBuildRotImg(getImgs(8, 0, 7, 2), 0, 1), id++, START_TILE));
+        tiles.add(END_PATH = new Tile(ImgFix.getBuildRotImg(getImgs(8, 0, 8, 2), 0, 1), id++, END_TILE));
     }
 
     private BufferedImage[] getImgs(int firstX, int firstY, int secondX, int secondY) {
