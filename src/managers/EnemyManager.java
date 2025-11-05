@@ -32,11 +32,12 @@ public class EnemyManager {
         this.playing = playing;
         this.start = start;
         this.end = end;
+        System.err.println(end.getxCord() * 32 + "," + end.getyCord() * 32);
         enemyImgs = new BufferedImage[4];
         addEnemy(ORC);
-        addEnemy(WOLF);
-        addEnemy(BAT);
-        addEnemy(KNIGHT);
+        // addEnemy(WOLF);
+        // addEnemy(BAT);
+        // addEnemy(KNIGHT);
         loadEnemyImgs();
     }
 
@@ -71,8 +72,16 @@ public class EnemyManager {
     }
 
     public void update() {
-        for (Enemy e : enemies) {
+        for (int i = 0; i < enemies.size(); ) {
+            Enemy e = enemies.get(i);
             updateEnemyMove(e);
+            System.err.println(e.getX() + "," + e.getY());
+            if (isAtEnd(e)) {
+                enemies.remove(i);
+                System.err.println("Enemy reached end -> removed");
+            } else {
+                i++;
+            }
         }
     }
 
@@ -83,11 +92,9 @@ public class EnemyManager {
         int newX = (int)(e.getX() + getSpeedXAndWidth(e.getLastDir()));
         int newY = (int)(e.getY() + getSpeedYAndHeight(e.getLastDir()));
 
-        if(getTileType(newX, newY) == ROAD_TILE) {
+        int nextType = getTileType(newX, newY);
+        if(nextType == ROAD_TILE || nextType == END_TILE) {
             e.move(speed, e.getLastDir());
-        }else if(isAtEnd(e)) {
-            //enemy reached the end
-            System.err.println("Enemy reached the end");
         } else {
             setNewDirectionAndMove(e);
         }
@@ -110,14 +117,16 @@ public class EnemyManager {
 
         if (dir == LEFT || dir == RIGHT) {
             int newY = (int)(e.getY() + getSpeedYAndHeight(UP));
-            if (getTileType((int) e.getX(), newY) == ROAD_TILE) {
+            int typeUp = getTileType((int) e.getX(), newY);
+            if (typeUp == ROAD_TILE || typeUp == END_TILE) {
                 e.move(speed, UP);
             } else {
                 e.move(speed, DOWN);
             }
         } else {
             int newX = (int)(e.getX() + getSpeedXAndWidth(RIGHT));
-            if (getTileType(newX, (int) e.getY()) == ROAD_TILE) {
+            int typeRight = getTileType(newX, (int) e.getY());
+            if (typeRight == ROAD_TILE || typeRight == END_TILE) {
                 e.move(speed, RIGHT);
             } else {
                 e.move(speed, LEFT);
@@ -126,28 +135,17 @@ public class EnemyManager {
     }
 
     private void fixEnemyPosition(Enemy e, int dir, int xCord, int yCord) {
-        switch (dir) {
-            case RIGHT:    
-                if (xCord < 19) {
-                    xCord++;
-                }
-                break;  
-            case DOWN:
-                if (yCord < 19) {
-                    yCord++;
-                }
-                break;        
-            default:
-                break;
-        }
-        e.setPosition(xCord * 32, yCord * 32);
+        // Snap to nearest grid line to avoid backward/forward teleport
+        int snapX = Math.round(e.getX() / 32f) * 32;
+        int snapY = Math.round(e.getY() / 32f) * 32;
+        e.setPosition(snapX, snapY);
     }
 
     private boolean isAtEnd(Enemy e) {
-        if (e.getX() == end.getxCord() && e.getY() == end.getyCord()) {
-            return true;
-        }
-        return false;
+        // Check by tile coordinates
+        int ex = (int)(e.getX() / 32);
+        int ey = (int)(e.getY() / 32);
+        return ex == end.getxCord() && ey == end.getyCord();
     }
 
     private float getSpeedXAndWidth(int dir) {
