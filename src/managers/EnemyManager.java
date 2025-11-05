@@ -25,19 +25,17 @@ public class EnemyManager {
     private Playing playing;
     private BufferedImage[] enemyImgs;
     private ArrayList<Enemy> enemies = new ArrayList<>();
-    private float speed = 0.5f;
     private PathPoint start, end;
 
     public EnemyManager(Playing playing, PathPoint start, PathPoint end) {
         this.playing = playing;
         this.start = start;
         this.end = end;
-        System.err.println(end.getxCord() * 32 + "," + end.getyCord() * 32);
         enemyImgs = new BufferedImage[4];
         addEnemy(ORC);
-        // addEnemy(WOLF);
-        // addEnemy(BAT);
-        // addEnemy(KNIGHT);
+        addEnemy(WOLF);
+        addEnemy(BAT);
+        addEnemy(KNIGHT);
         loadEnemyImgs();
     }
 
@@ -75,10 +73,8 @@ public class EnemyManager {
         for (int i = 0; i < enemies.size(); ) {
             Enemy e = enemies.get(i);
             updateEnemyMove(e);
-            System.err.println(e.getX() + "," + e.getY());
             if (isAtEnd(e)) {
                 enemies.remove(i);
-                System.err.println("Enemy reached end -> removed");
             } else {
                 i++;
             }
@@ -89,12 +85,12 @@ public class EnemyManager {
         if(e.getLastDir() == -1)
             setNewDirectionAndMove(e);
 
-        int newX = (int)(e.getX() + getSpeedXAndWidth(e.getLastDir()));
-        int newY = (int)(e.getY() + getSpeedYAndHeight(e.getLastDir()));
+        int newX = (int)(e.getX() + getSpeedXAndWidth(e.getLastDir(), e.getEnemyType())); 
+        int newY = (int)(e.getY() + getSpeedYAndHeight(e.getLastDir(), e.getEnemyType()));
 
         int nextType = getTileType(newX, newY);
         if(nextType == ROAD_TILE || nextType == END_TILE) {
-            e.move(speed, e.getLastDir());
+            e.move(GetSpeed(e.getEnemyType()), e.getLastDir());
         } else {
             setNewDirectionAndMove(e);
         }
@@ -116,20 +112,20 @@ public class EnemyManager {
             return;
 
         if (dir == LEFT || dir == RIGHT) {
-            int newY = (int)(e.getY() + getSpeedYAndHeight(UP));
+            int newY = (int)(e.getY() + getSpeedYAndHeight(UP, e.getEnemyType()));
             int typeUp = getTileType((int) e.getX(), newY);
             if (typeUp == ROAD_TILE || typeUp == END_TILE) {
-                e.move(speed, UP);
+                e.move(GetSpeed(e.getEnemyType()), UP);
             } else {
-                e.move(speed, DOWN);
+                e.move(GetSpeed(e.getEnemyType()), DOWN);
             }
         } else {
-            int newX = (int)(e.getX() + getSpeedXAndWidth(RIGHT));
+            int newX = (int)(e.getX() + getSpeedXAndWidth(RIGHT, e.getEnemyType()));
             int typeRight = getTileType(newX, (int) e.getY());
             if (typeRight == ROAD_TILE || typeRight == END_TILE) {
-                e.move(speed, RIGHT);
+                e.move(GetSpeed(e.getEnemyType()), RIGHT);
             } else {
-                e.move(speed, LEFT);
+                e.move(GetSpeed(e.getEnemyType()), LEFT);
             }
         }
     }
@@ -148,19 +144,19 @@ public class EnemyManager {
         return ex == end.getxCord() && ey == end.getyCord();
     }
 
-    private float getSpeedXAndWidth(int dir) {
+    private float getSpeedXAndWidth(int dir, int enemyType) {
         if(dir == LEFT)
-            return -speed;
+            return -GetSpeed(enemyType);
         else if(dir == RIGHT)
-            return speed + 32;
+            return GetSpeed(enemyType) + 32;
         return 0;
     }
 
-    private float getSpeedYAndHeight(int dir) {
+    private float getSpeedYAndHeight(int dir, int enemyType) {
         if(dir == UP)
-            return -speed;
+            return -GetSpeed(enemyType);
         else if(dir == DOWN)
-            return speed + 32;
+            return GetSpeed(enemyType) + 32;
         return 0;
     }
 

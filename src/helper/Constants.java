@@ -23,6 +23,39 @@ public class Constants {
         public static final int BAT = 1;    
         public static final int KNIGHT = 2;
         public static final int WOLF = 3;
+
+        public static float GetSpeed(int enemyType) {
+			switch (enemyType) {
+			case ORC:
+				return 0.5f;
+			case BAT:
+				return 0.7f;
+			case KNIGHT:
+				return 0.45f;
+			case WOLF:
+				return 0.85f;
+			}
+			return 0;
+		}
+    }
+
+    public static class Towers {
+        public static final int CANON_TOWER = 0;
+        public static final int ARCHER_TOWER = 1;
+        public static final int WIZARD_TOWER = 2;
+
+        public static String getName(int towerType) {
+            switch (towerType) {
+                case CANON_TOWER:
+                    return "Canon Tower";
+                case ARCHER_TOWER:
+                    return "Archer Tower";
+                case WIZARD_TOWER:
+                    return "Wizard Tower";
+                default:
+                    return "Unknown Tower";
+            }
+        }
     }
 
 }

@@ -7,7 +7,7 @@ import java.awt.Font;
 
 public class MyButton {
 
-    public int x, y, width, height;
+    public int x, y, width, height, id;
     private String text;     
     private Rectangle bounds;
     private boolean mouseOver, mousePressed;
@@ -18,14 +18,29 @@ public class MyButton {
     private final Color borderColor = new Color(30, 20, 10);
     private final Color textColor = new Color(240, 220, 180);
 
-    public MyButton(String text, int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.text = text;
-        initBounds();
-    }
+    // For normal Buttons
+	public MyButton(String text, int x, int y, int width, int height) {
+		this.text = text;
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		this.id = -1;
+
+		initBounds();
+	}
+
+	// For tile buttons
+	public MyButton(String text, int x, int y, int width, int height, int id) {
+		this.text = text;
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		this.id = id;
+
+		initBounds();
+	}
 
     private void initBounds() {
         bounds = new Rectangle(x, y, width, height);
@@ -87,5 +102,21 @@ public class MyButton {
 
     public Rectangle getBounds() {
         return bounds;
+    }
+
+    public int getID() {
+        return id;
+    }
+    public int getX() {
+        return x;
+    }
+    public int getY() {
+        return y;
+    }
+    public int getWidth() {
+        return width;
+    }
+    public int getHeight() {
+        return height;
     }
 }
