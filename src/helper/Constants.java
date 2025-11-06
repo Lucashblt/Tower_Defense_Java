@@ -37,6 +37,20 @@ public class Constants {
 			}
 			return 0;
 		}
+
+        public static int GetStartHealth(int enemyType) {
+            switch (enemyType) {
+                case ORC:
+                    return 85;
+                case BAT:
+                    return 100;
+                case KNIGHT:
+                    return 400;
+                case WOLF:
+                    return 125;
+            }
+            return 0;
+        }
     }
 
     public static class Towers {
@@ -56,6 +70,44 @@ public class Constants {
                     return "Unknown Tower";
             }
         }
-    }
 
+        public static int getStartDamage(int towerType) {
+            switch (towerType) {
+                case CANON_TOWER:
+                    return 15;
+                case ARCHER_TOWER:
+                    return 5;
+                case WIZARD_TOWER:
+                    return 0;
+                default:
+                    return 0;
+            }
+        }
+
+        public static int getDefaultRange(int towerType) {
+            switch (towerType) {
+                case CANON_TOWER:
+                    return 75;
+                case ARCHER_TOWER:
+                    return 120;
+                case WIZARD_TOWER:
+                    return 100;
+                default:
+                    return 0;
+            }
+        }
+
+        public static int getCooldownTime(int towerType) {
+            switch (towerType) {
+                case CANON_TOWER:
+                    return 120;
+                case ARCHER_TOWER:
+                    return 35;
+                case WIZARD_TOWER:
+                    return 50;
+                default:
+                    return 0;
+            }
+        }        
+    }
 }

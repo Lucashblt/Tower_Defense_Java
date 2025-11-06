@@ -6,9 +6,10 @@ import static helper.Constants.Directions.*;
 
 public abstract class Enemy {
 
-    private float x, y;
-    private Rectangle bounds;
-    private int health, ID, enemyType, lastDir;
+    protected float x, y;
+    protected Rectangle bounds;
+    protected int health, ID, enemyType, lastDir;
+    protected int maxHealth;
 
     public Enemy(float x, float y, int ID, int enemyType) {
         this.x = x;
@@ -17,6 +18,7 @@ public abstract class Enemy {
         this.enemyType = enemyType;
         bounds = new Rectangle((int)x, (int)y, 32, 32);
         lastDir = -1;
+        setStartHealth();
     }
 
     public Enemy(float x, float y, int health, int ID, int enemyType) {
@@ -27,6 +29,11 @@ public abstract class Enemy {
         this.enemyType = enemyType;
         bounds = new Rectangle((int)x, (int)y, 32, 32);
         lastDir = RIGHT;
+    }
+
+    private void setStartHealth() {
+        this.health = helper.Constants.Enemies.GetStartHealth(enemyType);
+        this.maxHealth = this.health;
     }
 
     public void move(float speed, int dir) {
@@ -86,4 +93,8 @@ public abstract class Enemy {
     public int getLastDir() {
         return lastDir;
     }    
+
+    public float getHealthBarFloat() {
+        return (float)health / (float)maxHealth;
+    }
 }

@@ -76,12 +76,18 @@ public class ActionBar extends Bar {
 			//g.drawString("Tier: " + displayedTower.getTier(), 560, 660);
 
             drawSelectedTowerBorder(g);
+            drawDisplayTowerRange(g);
         }
     }
 
     private void drawSelectedTowerBorder(Graphics g) {
         g.setColor(Color.BLACK);
         g.drawRect(displayedTower.getX(), displayedTower.getY(), 32, 32);
+    }
+
+    private void drawDisplayTowerRange(Graphics g){
+        g.setColor(Color.WHITE);
+        g.drawOval(displayedTower.getX()+ 16 - (int)displayedTower.getRange()/2, displayedTower.getY()+ 16 - (int)displayedTower.getRange()/2, (int)displayedTower.getRange(), (int)displayedTower.getRange());
     }
 
     public void mouseClicked(int mouseX, int mouseY) {

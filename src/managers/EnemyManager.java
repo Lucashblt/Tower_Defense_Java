@@ -2,6 +2,7 @@ package managers;
 
 import scenes.Playing;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
@@ -26,6 +27,7 @@ public class EnemyManager {
     private BufferedImage[] enemyImgs;
     private ArrayList<Enemy> enemies = new ArrayList<>();
     private PathPoint start, end;
+    private final int HPBARWIDTH = 20;
 
     public EnemyManager(Playing playing, PathPoint start, PathPoint end) {
         this.playing = playing;
@@ -40,59 +42,27 @@ public class EnemyManager {
     }
 
     
+    public void draw(Graphics g) {
+        for (Enemy e : enemies) {
+            drawEnemy(e, g);
+            drawHealthBar(e, g);
+        }
+    }
+
+    private void drawHealthBar(Enemy e, Graphics g) {
+        g.setColor(Color.RED);
+        g.fillRect((int)e.getX() + 16 - (getNewBarWidth(e) / 2), (int)e.getY() - 10, getNewBarWidth(e), 3);
+    }
+
+    private int getNewBarWidth(Enemy e) {
+        return (int)(HPBARWIDTH * e.getHealthBarFloat());
+    }
+
     private void loadEnemyImgs() {
         BufferedImage atlas = LoadSave.getSpriteAtlas();
         
         for (int i = 0; i < 4; i++) {
             enemyImgs[i] = atlas.getSubimage(i * 32, 32, 32, 32);
-        }
-    }
-
-    public void addEnemy(int enemyType) {
-        int x = start.getxCord() * 32;
-        int y = start.getyCord() * 32;
-        switch (enemyType) {
-            case ORC:
-                enemies.add(new Orc(x, y, 0));
-                break;
-            case WOLF:
-                enemies.add(new Wolf(x, y, 0));
-                break;
-            case BAT:
-                enemies.add(new Bat(x, y, 0));
-                break;
-            case KNIGHT:
-                enemies.add(new Knight(x, y, 0));
-                break;
-            default:
-                break;
-        }
-    }
-
-    public void update() {
-        for (int i = 0; i < enemies.size(); ) {
-            Enemy e = enemies.get(i);
-            updateEnemyMove(e);
-            if (isAtEnd(e)) {
-                enemies.remove(i);
-            } else {
-                i++;
-            }
-        }
-    }
-
-    public void updateEnemyMove(Enemy e) {
-        if(e.getLastDir() == -1)
-            setNewDirectionAndMove(e);
-
-        int newX = (int)(e.getX() + getSpeedXAndWidth(e.getLastDir(), e.getEnemyType())); 
-        int newY = (int)(e.getY() + getSpeedYAndHeight(e.getLastDir(), e.getEnemyType()));
-
-        int nextType = getTileType(newX, newY);
-        if(nextType == ROAD_TILE || nextType == END_TILE) {
-            e.move(GetSpeed(e.getEnemyType()), e.getLastDir());
-        } else {
-            setNewDirectionAndMove(e);
         }
     }
 
@@ -160,14 +130,56 @@ public class EnemyManager {
         return 0;
     }
 
-    public void draw(Graphics g) {
-        for (Enemy e : enemies) {
-            drawEnemy(e, g);
+    private void drawEnemy(Enemy e, Graphics g) {
+        g.drawImage(enemyImgs[e.getEnemyType()], (int)e.getX(), (int)e.getY(), null);
+    }
+
+    
+    public void addEnemy(int enemyType) {
+        int x = start.getxCord() * 32;
+        int y = start.getyCord() * 32;
+        switch (enemyType) {
+            case ORC:
+                enemies.add(new Orc(x, y, 0));
+                break;
+            case WOLF:
+                enemies.add(new Wolf(x, y, 0));
+                break;
+            case BAT:
+                enemies.add(new Bat(x, y, 0));
+                break;
+            case KNIGHT:
+                enemies.add(new Knight(x, y, 0));
+                break;
+            default:
+                break;
         }
     }
 
+    public void update() {
+        for (int i = 0; i < enemies.size(); ) {
+            Enemy e = enemies.get(i);
+            updateEnemyMove(e);
+            if (isAtEnd(e)) {
+                enemies.remove(i);
+            } else {
+                i++;
+            }
+        }
+    }
 
-    private void drawEnemy(Enemy e, Graphics g) {
-        g.drawImage(enemyImgs[e.getEnemyType()], (int)e.getX(), (int)e.getY(), null);
+    public void updateEnemyMove(Enemy e) {
+        if(e.getLastDir() == -1)
+            setNewDirectionAndMove(e);
+
+        int newX = (int)(e.getX() + getSpeedXAndWidth(e.getLastDir(), e.getEnemyType())); 
+        int newY = (int)(e.getY() + getSpeedYAndHeight(e.getLastDir(), e.getEnemyType()));
+
+        int nextType = getTileType(newX, newY);
+        if(nextType == ROAD_TILE || nextType == END_TILE) {
+            e.move(GetSpeed(e.getEnemyType()), e.getLastDir());
+        } else {
+            setNewDirectionAndMove(e);
+        }
     }
 }
