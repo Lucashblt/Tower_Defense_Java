@@ -10,6 +10,7 @@ public abstract class Enemy {
     protected Rectangle bounds;
     protected int health, ID, enemyType, lastDir;
     protected int maxHealth;
+    protected boolean alive = true;
 
     public Enemy(float x, float y, int ID, int enemyType) {
         this.x = x;
@@ -34,6 +35,13 @@ public abstract class Enemy {
     private void setStartHealth() {
         this.health = helper.Constants.Enemies.GetStartHealth(enemyType);
         this.maxHealth = this.health;
+    }
+
+    public void hurt(int damage) {
+        this.health -= damage;
+        if (this.health <= 0) {
+            this.alive = false;
+        }
     }
 
     public void move(float speed, int dir) {
@@ -96,5 +104,9 @@ public abstract class Enemy {
 
     public float getHealthBarFloat() {
         return (float)health / (float)maxHealth;
+    }
+
+    public boolean isAlive() {
+        return alive;
     }
 }

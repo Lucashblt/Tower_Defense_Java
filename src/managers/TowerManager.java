@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.nio.Buffer;
 import java.util.ArrayList;
 
+import enemies.Enemy;
 import helper.LoadSave;
 import static helper.Constants.Towers.*;
 import objects.Tower;
@@ -32,13 +33,32 @@ public class TowerManager {
         }
     }
 
+    private void attackEnemyIfClose() {
+        for (Tower t : towers) {
+            for(Enemy e : playing.getEnemyManager().getEnemies()){
+                if(e.isAlive()) {
+                    if(isEnemyInRange(t, e)){
+                        e.hurt(1);
+                    } else {
+
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isEnemyInRange(Tower t, Enemy e) {
+        int range  = helper.Utilz.getHypoDistance((int)t.getX(), (int)t.getY(), (int)e.getX(), (int)e.getY());
+        return range <= t.getRange();
+    }
+
     public void addTower(Tower selectedTower, int x, int y) {
 
         towers.add(new Tower(x, y, towerIdCounter++, selectedTower.getTowerType()));
     }
 
     public void update() {
-        // Update tower logic here if needed
+        attackEnemyIfClose();
     }
 
     public void draw(Graphics g){
