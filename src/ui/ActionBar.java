@@ -74,7 +74,14 @@ public class ActionBar extends Bar {
 			g.drawString("" + Towers.getName(displayedTower.getTowerType()), 480, 660);
 			g.drawString("ID: " + displayedTower.getId(), 480, 675);
 			//g.drawString("Tier: " + displayedTower.getTier(), 560, 660);
+
+            drawSelectedTowerBorder(g);
         }
+    }
+
+    private void drawSelectedTowerBorder(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.drawRect(displayedTower.getX(), displayedTower.getY(), 32, 32);
     }
 
     public void mouseClicked(int mouseX, int mouseY) {
