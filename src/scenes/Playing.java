@@ -10,7 +10,7 @@ import enemies.Enemy;
 import helper.LevelBuild;
 import main.Game;
 import managers.EnemyManager;
-import managers.ProjectilManager;
+import managers.ProjectileManager;
 import managers.TileManager;
 import managers.TowerManager;
 import objects.PathPoint;
@@ -23,7 +23,7 @@ public class Playing extends GameScene implements SceneMethods {
     private TileManager tileManager;
     private EnemyManager enemyManager;
     private TowerManager towerManager;
-    private ProjectilManager projectilManager;
+    private ProjectileManager projectilManager;
     private ActionBar actionBar;
     private PathPoint start, end;
     private Tower selectedTower;
@@ -38,7 +38,7 @@ public class Playing extends GameScene implements SceneMethods {
         actionBar = new ActionBar(0, 640, 640, 100, this);
         enemyManager = new EnemyManager(this, start, end);
         towerManager = new TowerManager(this);
-        projectilManager = new ProjectilManager(this);
+        projectilManager = new ProjectileManager(this);
         initButtons();
     }
  

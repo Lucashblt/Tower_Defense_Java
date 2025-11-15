@@ -11,6 +11,8 @@ public abstract class Enemy {
     protected int health, ID, enemyType, lastDir;
     protected int maxHealth;
     protected boolean alive = true;
+    protected int slowTickLimit = 120;
+	protected int slowTick = slowTickLimit;
 
     public Enemy(float x, float y, int ID, int enemyType) {
         this.x = x;
@@ -79,6 +81,10 @@ public abstract class Enemy {
         this.x = x;
         this.y = y;
     }
+
+    public void slow() {
+		slowTick = 0;
+	}
 
     public float getX() {
         return x;
