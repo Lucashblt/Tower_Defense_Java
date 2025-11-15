@@ -5,7 +5,6 @@ import scenes.Playing;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 import enemies.Bat;
@@ -15,7 +14,6 @@ import enemies.Orc;
 import enemies.Wolf;
 import helper.LoadSave;
 import objects.PathPoint;
-import objects.Tile;
 
 import static helper.Constants.Directions.*;
 import static helper.Constants.Tiles.*;

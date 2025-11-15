@@ -5,11 +5,12 @@ import static helper.Constants.Tiles.GRASS_TILE;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
-import java.nio.file.Path;
 
+import enemies.Enemy;
 import helper.LevelBuild;
 import main.Game;
 import managers.EnemyManager;
+import managers.ProjectilManager;
 import managers.TileManager;
 import managers.TowerManager;
 import objects.PathPoint;
@@ -22,6 +23,7 @@ public class Playing extends GameScene implements SceneMethods {
     private TileManager tileManager;
     private EnemyManager enemyManager;
     private TowerManager towerManager;
+    private ProjectilManager projectilManager;
     private ActionBar actionBar;
     private PathPoint start, end;
     private Tower selectedTower;
@@ -36,6 +38,7 @@ public class Playing extends GameScene implements SceneMethods {
         actionBar = new ActionBar(0, 640, 640, 100, this);
         enemyManager = new EnemyManager(this, start, end);
         towerManager = new TowerManager(this);
+        projectilManager = new ProjectilManager(this);
         initButtons();
     }
  
@@ -46,6 +49,7 @@ public class Playing extends GameScene implements SceneMethods {
     public void update() {
         enemyManager.update();
         towerManager.update();
+        projectilManager.update();
     }
 
     @Override
@@ -54,6 +58,7 @@ public class Playing extends GameScene implements SceneMethods {
         actionBar.draw(g);
         enemyManager.draw(g);
         towerManager.draw(g);
+        projectilManager.draw(g);
         drawSelectedTower(g);
         drawHilightedTile(g);
     }
@@ -153,6 +158,10 @@ public class Playing extends GameScene implements SceneMethods {
 
     public EnemyManager getEnemyManager() {
         return enemyManager;
+    }
+
+    public void shootEnemy(Tower t, Enemy e) {
+        projectilManager.newProjectile(t, e);
     }
 
 }

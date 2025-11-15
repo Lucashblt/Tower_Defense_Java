@@ -113,8 +113,8 @@ public class Constants {
 
     public static class Projectiles{
         public static final int ARROW = 0;
-        public static final int BOMB = 1;
-        public static final int CHAINS = 2;
+        public static final int CHAINS = 1;
+        public static final int BOMB = 2;
 
         public static float GetSpeed(int type) {
 			switch (type) {

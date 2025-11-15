@@ -2,12 +2,10 @@ package managers;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 import java.util.ArrayList;
 
 import enemies.Enemy;
 import helper.LoadSave;
-import static helper.Constants.Towers.*;
 import objects.Tower;
 import scenes.Playing;
 
@@ -33,14 +31,13 @@ public class TowerManager {
         }
     }
 
-    private void attackEnemyIfClose() {
-        for (Tower t : towers) {
-            for(Enemy e : playing.getEnemyManager().getEnemies()){
-                if(e.isAlive()) {
-                    if(isEnemyInRange(t, e)){
-                        e.hurt(1);
-                    } else {
-
+    private void attackEnemyIfClose(Tower t) {    
+        for(Enemy e : playing.getEnemyManager().getEnemies()){
+            if(e.isAlive()) {
+                if(isEnemyInRange(t, e)){
+                    if(t.isCooldownOver()) {
+                        playing.shootEnemy(t, e);
+                        t.resetCooldown();
                     }
                 }
             }
@@ -58,7 +55,10 @@ public class TowerManager {
     }
 
     public void update() {
-        attackEnemyIfClose();
+        for (Tower t : towers) {
+            t.update();
+            attackEnemyIfClose(t);            
+        }
     }
 
     public void draw(Graphics g){

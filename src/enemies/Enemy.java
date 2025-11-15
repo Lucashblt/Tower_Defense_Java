@@ -62,10 +62,16 @@ public abstract class Enemy {
                 this.y += speed;
                 lastDir = DOWN;
                 break;
-        
             default:
                 break;
         }
+
+        updateHitbox();
+    }
+
+    private void updateHitbox() {
+        this.bounds.x = (int) this.x;
+        this.bounds.y = (int) this.y;
     }
 
     public void setPosition(int x, int y) {
