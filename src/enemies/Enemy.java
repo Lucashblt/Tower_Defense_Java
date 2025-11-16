@@ -46,6 +46,12 @@ public abstract class Enemy {
         }
     }
 
+    public void kill() {
+        // when the enemy reaches the end
+        this.alive = false;
+        this.health = 0;
+    }
+
     public void move(float speed, int dir) {
         lastDir = dir;
 

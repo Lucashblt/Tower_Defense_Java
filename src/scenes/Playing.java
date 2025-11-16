@@ -13,6 +13,7 @@ import managers.EnemyManager;
 import managers.ProjectileManager;
 import managers.TileManager;
 import managers.TowerManager;
+import managers.WaveManager;
 import objects.PathPoint;
 import objects.Tower;
 import ui.ActionBar;
@@ -24,6 +25,7 @@ public class Playing extends GameScene implements SceneMethods {
     private EnemyManager enemyManager;
     private TowerManager towerManager;
     private ProjectileManager projectilManager;
+    private WaveManager waveManager;
     private ActionBar actionBar;
     private PathPoint start, end;
     private Tower selectedTower;
@@ -39,6 +41,7 @@ public class Playing extends GameScene implements SceneMethods {
         enemyManager = new EnemyManager(this, start, end);
         towerManager = new TowerManager(this);
         projectilManager = new ProjectileManager(this);
+        waveManager = new WaveManager(this);
         initButtons();
     }
  
@@ -47,9 +50,28 @@ public class Playing extends GameScene implements SceneMethods {
     }
 
     public void update() {
+        waveManager.update();
+
+        if(isTimeForNewEnemy()) {
+            spawnEnemy();
+        }
+
         enemyManager.update();
         towerManager.update();
         projectilManager.update();
+    }
+
+    private void spawnEnemy() {
+        enemyManager.spawnEnemy(waveManager.getNextEnemy());
+    }
+
+    private boolean isTimeForNewEnemy() {
+        if(waveManager.isTimeForNewEnemy()){
+            if(waveManager.isThereMoreEnemiesInWave()){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -107,6 +129,11 @@ public class Playing extends GameScene implements SceneMethods {
         this.selectedTower = selectedTower;
     }
 
+    
+    public void shootEnemy(Tower t, Enemy e) {
+        projectilManager.newProjectile(t, e);
+    }
+
     @Override
     public void mouseClicked(int x, int y) {
         if (y >= 640)
@@ -160,8 +187,7 @@ public class Playing extends GameScene implements SceneMethods {
         return enemyManager;
     }
 
-    public void shootEnemy(Tower t, Enemy e) {
-        projectilManager.newProjectile(t, e);
+    public WaveManager getWaveManager() {
+        return waveManager;
     }
-
 }

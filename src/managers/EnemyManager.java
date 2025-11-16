@@ -33,15 +33,28 @@ public class EnemyManager {
         this.start = start;
         this.end = end;
         enemyImgs = new BufferedImage[4];
-        addEnemy(ORC);
-        addEnemy(WOLF);
-        addEnemy(BAT);
-        addEnemy(KNIGHT);
+        // addEnemy(ORC);
+        // addEnemy(WOLF);
+        // addEnemy(BAT);
+        // addEnemy(KNIGHT);
         loadEnemyImgs();
         loadSlowEffect();
     }
 
-    
+    public void update() {
+        for (int i = 0; i < enemies.size(); ) {
+            Enemy e = enemies.get(i);
+            if(e.isAlive()) {
+                updateEnemyMove(e);
+            }
+            if (!e.isAlive()) {
+                enemies.remove(i);
+            } else {
+                i++;
+            }
+        }
+    }
+
     public void draw(Graphics g) {
         for (Enemy e : enemies) {
             if(e.isAlive()) {
@@ -148,6 +161,10 @@ public class EnemyManager {
     }
 
     
+    public void spawnEnemy(int nextEnemy) {
+        addEnemy(nextEnemy);
+    }
+    
     public void addEnemy(int enemyType) {
         int x = start.getxCord() * 32;
         int y = start.getyCord() * 32;
@@ -169,20 +186,6 @@ public class EnemyManager {
         }
     }
 
-    public void update() {
-        for (int i = 0; i < enemies.size(); ) {
-            Enemy e = enemies.get(i);
-            if(e.isAlive()) {
-                updateEnemyMove(e);
-            }
-            if (isAtEnd(e) || !e.isAlive()) {
-                enemies.remove(i);
-            } else {
-                i++;
-            }
-        }
-    }
-
     public void updateEnemyMove(Enemy e) {
         if(e.getLastDir() == -1)
             setNewDirectionAndMove(e);
@@ -193,6 +196,9 @@ public class EnemyManager {
         int nextType = getTileType(newX, newY);
         if(nextType == ROAD_TILE || nextType == END_TILE) {
             e.move(GetSpeed(e.getEnemyType()), e.getLastDir());
+        } else if(isAtEnd(e)){
+            e.kill();
+            System.err.println("Enemy reached the end!");
         } else {
             setNewDirectionAndMove(e);
         }
@@ -201,4 +207,5 @@ public class EnemyManager {
     public ArrayList<Enemy> getEnemies() {
         return enemies;
     }
+
 }
