@@ -32,7 +32,9 @@ public class TowerManager {
     }
 
     private void attackEnemyIfClose(Tower t) {    
-        for(Enemy e : playing.getEnemyManager().getEnemies()){
+        ArrayList<Enemy> enemies = playing.getEnemyManager().getEnemies();
+        for(int i = 0; i < enemies.size(); i++){
+            Enemy e = enemies.get(i);
             if(e.isAlive()) {
                 if(isEnemyInRange(t, e)){
                     if(t.isCooldownOver()) {

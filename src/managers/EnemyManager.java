@@ -56,7 +56,8 @@ public class EnemyManager {
     }
 
     public void draw(Graphics g) {
-        for (Enemy e : enemies) {
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy e = enemies.get(i);
             if(e.isAlive()) {
                 drawEnemy(e, g);
                 drawHealthBar(e, g);
@@ -206,6 +207,15 @@ public class EnemyManager {
 
     public ArrayList<Enemy> getEnemies() {
         return enemies;
+    }
+
+    public int getAmountOfAliveEnemies() {
+        int size = 0;
+        for(Enemy e : enemies) {
+            if(e.isAlive())
+                size++;
+        }
+        return size;
     }
 
 }

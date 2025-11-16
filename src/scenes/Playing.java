@@ -42,15 +42,21 @@ public class Playing extends GameScene implements SceneMethods {
         towerManager = new TowerManager(this);
         projectilManager = new ProjectileManager(this);
         waveManager = new WaveManager(this);
-        initButtons();
-    }
- 
-    private void initButtons() {
-
     }
 
     public void update() {
         waveManager.update();
+
+        if(isAllEnemiesDead()) {
+            if(isThereMoreWaves()){
+                waveManager.startWaveTimer();
+                if(isWaveTimerOver()){
+                    waveManager.increaseWaveIndex();
+                    enemyManager.getEnemies().clear();
+                    waveManager.resetEnemyIndex();
+                }
+            }
+        }
 
         if(isTimeForNewEnemy()) {
             spawnEnemy();
@@ -59,6 +65,26 @@ public class Playing extends GameScene implements SceneMethods {
         enemyManager.update();
         towerManager.update();
         projectilManager.update();
+    }
+
+    private boolean isWaveTimerOver(){
+        return waveManager.isWaveTimerOver();
+    }
+
+    private boolean isThereMoreWaves(){
+        return waveManager.isThereMoreWaves();
+    }
+
+    private boolean isAllEnemiesDead() {
+        if(waveManager.isThereMoreEnemiesInWave()) {
+            return false;
+        }
+        for(Enemy e : enemyManager.getEnemies()) {
+            if(e.isAlive()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void spawnEnemy() {
@@ -83,6 +109,7 @@ public class Playing extends GameScene implements SceneMethods {
         projectilManager.draw(g);
         drawSelectedTower(g);
         drawHilightedTile(g);
+        drawWavesInfo(g);
     }
 
     private void drawHilightedTile(Graphics g) {
@@ -96,6 +123,10 @@ public class Playing extends GameScene implements SceneMethods {
         if (selectedTower != null) {
             g.drawImage(towerManager.getTowerImgs()[selectedTower.getTowerType()], mouseX, mouseY, null);
         }
+    }
+
+    private void drawWavesInfo(Graphics g) {
+        
     }
 
     private void drawLevel(Graphics g) {
