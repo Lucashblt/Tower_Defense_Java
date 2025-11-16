@@ -26,6 +26,7 @@ public class EnemyManager {
     private ArrayList<Enemy> enemies = new ArrayList<>();
     private PathPoint start, end;
     private final int HPBARWIDTH = 20;
+    private BufferedImage slowEffect;
 
     public EnemyManager(Playing playing, PathPoint start, PathPoint end) {
         this.playing = playing;
@@ -37,6 +38,7 @@ public class EnemyManager {
         addEnemy(BAT);
         addEnemy(KNIGHT);
         loadEnemyImgs();
+        loadSlowEffect();
     }
 
     
@@ -45,7 +47,14 @@ public class EnemyManager {
             if(e.isAlive()) {
                 drawEnemy(e, g);
                 drawHealthBar(e, g);
+                drawEffects(e, g);
             }
+        }
+    }
+
+    private void drawEffects(Enemy e, Graphics g) {
+        if(e.isSlowed()) {
+            g.drawImage(slowEffect, (int)e.getX(), (int)e.getY(), null);
         }
     }
 
@@ -64,6 +73,10 @@ public class EnemyManager {
         for (int i = 0; i < 4; i++) {
             enemyImgs[i] = atlas.getSubimage(i * 32, 32, 32, 32);
         }
+    }
+
+    private void loadSlowEffect() {
+        slowEffect =  LoadSave.getSpriteAtlas().getSubimage(9 * 32, 32 * 2, 32, 32);
     }
 
     private int getTileType(int x, int y) {

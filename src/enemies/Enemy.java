@@ -47,6 +47,13 @@ public abstract class Enemy {
     }
 
     public void move(float speed, int dir) {
+        lastDir = dir;
+
+        if(slowTick < slowTickLimit) {
+            slowTick++;
+            speed *= 0.5f;
+        }
+
         switch (dir) {
             case LEFT:
                 this.x -= speed;
@@ -120,5 +127,9 @@ public abstract class Enemy {
 
     public boolean isAlive() {
         return alive;
+    }
+
+    public boolean isSlowed() {
+        return slowTick < slowTickLimit;
     }
 }
