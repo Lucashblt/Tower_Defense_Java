@@ -5,7 +5,7 @@ import javax.swing.JFrame;
 import managers.TileManager;
 import scenes.Menu;
 import scenes.Playing;
-import scenes.Settings;
+import scenes.SimulationPerformance;
 
 public class Game extends JFrame implements Runnable {
 
@@ -18,7 +18,7 @@ public class Game extends JFrame implements Runnable {
 	//Classes
     private Render render;
 	private Menu menu;
-	private Settings settings;
+	private SimulationPerformance simulationPerformance;
 	private Playing playing;
 	private TileManager tileManager;
 
@@ -39,7 +39,7 @@ public class Game extends JFrame implements Runnable {
 		gameScreen = new GameScreen(this);
 		render = new Render(this);
 		menu = new Menu(this);
-		settings = new Settings(this);
+		simulationPerformance = new SimulationPerformance(this);
 		playing = new Playing(this);
 	}
 
@@ -57,7 +57,7 @@ public class Game extends JFrame implements Runnable {
 			case PLAYING:
 				playing.update();
 				break;
-			case SETTINGS:
+			case SIMULATION_PERFORMANCE:
 				break;
 			default:
 				break;
@@ -122,8 +122,8 @@ public class Game extends JFrame implements Runnable {
 		return menu;
 	}
 
-	public Settings getSettings() {
-		return settings;
+	public SimulationPerformance getSimulationPerformance() {
+		return simulationPerformance;
 	}
 
 	public TileManager getTileManager() {

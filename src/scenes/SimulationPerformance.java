@@ -6,11 +6,11 @@ import main.Game;
 import ui.MyButton;
 import static main.GameStates.*;
 
-public class Settings extends GameScene implements SceneMethods {
+public class SimulationPerformance extends GameScene implements SceneMethods {
 
     private MyButton bMenu;
 
-    public Settings(Game game) {
+    public SimulationPerformance(Game game) {
         super(game);
         initButtons();
     }

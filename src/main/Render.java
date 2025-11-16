@@ -19,8 +19,8 @@ public class Render {
             case PLAYING:
                 game.getPlaying().render(g);
                 break;
-            case SETTINGS:
-                game.getSettings().render(g);
+            case SIMULATION_PERFORMANCE:
+                game.getSimulationPerformance().render(g);
                 break;
         
             default:
