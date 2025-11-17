@@ -119,4 +119,8 @@ public class MyButton {
     public int getHeight() {
         return height;
     }
+    
+    public void setText(String text) {
+        this.text = text;
+    }
 }

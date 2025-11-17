@@ -6,12 +6,14 @@ public class Tower {
 
     private int x, y, id, towerType, cdTick = 0, damage;
     private float range, cooldown;
+    private int tier;
 
     public Tower(int x, int y, int id, int towerType) {
         this.x = x;
         this.y = y;
         this.id = id;
         this.towerType = towerType;
+        this.tier = 1;
         setDefaultDamage();
         setDefaultRange();
         setCooldownTime();
@@ -66,5 +68,33 @@ public class Tower {
 
     public float getCooldown() {
         return cooldown;
+    }
+
+    public void upgradeTower() {
+        this.tier++;
+
+        switch (towerType) {
+            case ARCHER_TOWER:  
+                this.damage += 3;
+                this.range += 20;     
+                this.cooldown -= 5;         
+                break;
+            case CANON_TOWER:
+                this.damage += 5;
+                this.range += 10;
+                this.cooldown -= 15;
+                break;
+            case WIZARD_TOWER:
+                this.damage += 1;
+                this.range += 15;
+                this.cooldown -= 10;
+                break;        
+            default:
+                break;
+        }
+    }
+
+    public int getTier() {
+        return tier;
     }
 }

@@ -81,4 +81,23 @@ public class TowerManager {
         }
         return null;
     }
+
+    public void sellTower(Tower displayedTower) {
+        for (int i = 0; i < towers.size(); i++) {
+            if(towers.get(i).getId() == displayedTower.getId()) {
+                towers.remove(i);
+                return;
+            }
+        }
+    }
+
+    public void upgradeTower(Tower displayedTower) {
+        // add more dmg and range
+        for (Tower t : towers) {
+            if(t.getId() == displayedTower.getId()) {
+                t.upgradeTower();
+                return;
+            }
+        }
+    }
 }

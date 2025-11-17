@@ -90,9 +90,9 @@ public class Constants {
                 case CANON_TOWER:
                     return 15;
                 case ARCHER_TOWER:
-                    return 5;
+                    return 7;
                 case WIZARD_TOWER:
-                    return 0;
+                    return 1;
                 default:
                     return 0;
             }

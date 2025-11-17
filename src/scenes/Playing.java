@@ -31,6 +31,7 @@ public class Playing extends GameScene implements SceneMethods {
     private Tower selectedTower;
     private int mouseX, mouseY;
     private int goldTick = 0;
+    private boolean gamePaused = false;
 
     public Playing(Game game) {
         super(game);
@@ -46,31 +47,33 @@ public class Playing extends GameScene implements SceneMethods {
     }
 
     public void update() {
-        waveManager.update();
+        if(!gamePaused){
+            waveManager.update();
 
-        goldTick++;
-        if(goldTick % (60*3) == 0) {
-            actionBar.addGold(1);
-        }
+            goldTick++;
+            if(goldTick % (60*3) == 0) {
+                actionBar.addGold(1);
+            }
 
-        if(isAllEnemiesDead()) {
-            if(isThereMoreWaves()){
-                waveManager.startWaveTimer();
-                if(isWaveTimerOver()){
-                    waveManager.increaseWaveIndex();
-                    enemyManager.getEnemies().clear();
-                    waveManager.resetEnemyIndex();
+            if(isAllEnemiesDead()) {
+                if(isThereMoreWaves()){
+                    waveManager.startWaveTimer();
+                    if(isWaveTimerOver()){
+                        waveManager.increaseWaveIndex();
+                        enemyManager.getEnemies().clear();
+                        waveManager.resetEnemyIndex();
+                    }
                 }
             }
-        }
 
-        if(isTimeForNewEnemy()) {
-            spawnEnemy();
-        }
+            if(isTimeForNewEnemy()) {
+                spawnEnemy();
+            }
 
-        enemyManager.update();
-        towerManager.update();
-        projectilManager.update();
+            enemyManager.update();
+            towerManager.update();
+            projectilManager.update();
+        }       
     }
 
     private boolean isWaveTimerOver(){
@@ -104,6 +107,14 @@ public class Playing extends GameScene implements SceneMethods {
             }
         }
         return false;
+    }
+
+    public boolean isGamePaused() {
+        return gamePaused;
+    }
+
+    public void setGamePaused(boolean gamePaused) {
+        this.gamePaused = gamePaused;
     }
 
     @Override
