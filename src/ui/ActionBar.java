@@ -18,6 +18,7 @@ public class ActionBar extends Bar {
     private Tower selectedTower;
     private Tower displayedTower;
     private DecimalFormat formatter;
+    private int gold = 100;
 
     public ActionBar(int x, int y, int width, int height, Playing playing) {
         super(x, y, width, height);
@@ -58,9 +59,19 @@ public class ActionBar extends Bar {
         g.fillRect(x, y, width, height);
         drawButtons(g);
 
-        drawDisplayTowerInfo(g);
+        if (displayedTower != null) {
+            drawDisplayTowerInfo(g);
+        } else {
+            drawWavesInfo(g);
+        }
 
-        drawWavesInfo(g);
+        drawGoldAmount(g);
+    }
+
+    private void drawGoldAmount(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("LucidaSans", Font.BOLD, 20));
+        g.drawString("Gold: " + gold, 150, 720);
     }
 
     private void drawWavesInfo(Graphics g) {
@@ -73,20 +84,20 @@ public class ActionBar extends Bar {
 
     private void drawEnemyLeftInfo(Graphics g) {
         int enemiesLeft = playing.getEnemyManager().getAmountOfAliveEnemies();
-        g.drawString("Enemies left: " + enemiesLeft, 475, 690);
+        g.drawString("Enemies left: " + enemiesLeft, 410, 660);
     }
 
     private void drawWavesLevelInfo(Graphics g) {
         int current = playing.getWaveManager().getWaveIndex() + 1;
         int size = playing.getWaveManager().getWaves().size();
-        g.drawString("Wave " + current + " / " + size, 475, 720);
+        g.drawString("Wave " + current + " / " + size, 410, 690);
     }
 
     private void drawWaveTimerInfo(Graphics g) {
         if(playing.getWaveManager().isWaveTimerStarted()){
             float timeLeft = playing.getWaveManager().getTimeLeft();
             String formatedText = formatter.format(timeLeft);
-            g.drawString("Time left: " + formatedText + "s", 475, 660);
+            g.drawString("Time left: " + formatedText + "s", 410, 720);
         }
     }
 
@@ -95,21 +106,19 @@ public class ActionBar extends Bar {
     }
 
     public void drawDisplayTowerInfo(Graphics g) {
-        if (displayedTower != null) {
-            g.setColor(Color.gray);
-			g.fillRect(410, 645, 220, 85);
-			g.setColor(Color.black);
-			g.drawRect(410, 645, 220, 85);
-			g.drawRect(420, 650, 50, 50);
-			g.drawImage(playing.getTowerManager().getTowerImgs()[displayedTower.getTowerType()], 420, 650, 50, 50, null);
-			g.setFont(new Font("LucidaSans", Font.BOLD, 15));
-			g.drawString("" + Towers.getName(displayedTower.getTowerType()), 480, 660);
-			g.drawString("ID: " + displayedTower.getId(), 480, 675);
-			//g.drawString("Tier: " + displayedTower.getTier(), 560, 660);
+        g.setColor(Color.gray);
+		g.fillRect(410, 645, 220, 85);
+		g.setColor(Color.black);
+		g.drawRect(410, 645, 220, 85);
+		g.drawRect(420, 650, 50, 50);
+		g.drawImage(playing.getTowerManager().getTowerImgs()[displayedTower.getTowerType()], 420, 650, 50, 50, null);
+		g.setFont(new Font("LucidaSans", Font.BOLD, 15));
+		g.drawString("" + Towers.getName(displayedTower.getTowerType()), 480, 660);
+		g.drawString("ID: " + displayedTower.getId(), 480, 675);
+		//g.drawString("Tier: " + displayedTower.getTier(), 560, 660);
 
-            drawSelectedTowerBorder(g);
-            drawDisplayTowerRange(g);
-        }
+        drawSelectedTowerBorder(g);
+        drawDisplayTowerRange(g);
     }
 
     private void drawSelectedTowerBorder(Graphics g) {
@@ -171,5 +180,9 @@ public class ActionBar extends Bar {
         for (MyButton b : towerButtons) {
             b.resetBooleans();
         }
+    }
+
+    public void resetDisplayedTower() {
+        this.displayedTower = null;
     }
 }

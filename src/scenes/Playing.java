@@ -180,7 +180,11 @@ public class Playing extends GameScene implements SceneMethods {
                 }
             } else {
                 Tower t = getTowerAt(mouseX, mouseY);
-                actionBar.displayTowerInfo(t);
+                if (t != null) {
+                    actionBar.displayTowerInfo(t);
+                } else {
+                    actionBar.resetDisplayedTower();
+                }
             }
         }
     }
