@@ -2,7 +2,10 @@ package enemies;
 
 import java.awt.Rectangle;
 
+import managers.EnemyManager;
+
 import static helper.Constants.Directions.*;
+import static helper.Constants.Enemies.*;
 
 public abstract class Enemy {
 
@@ -13,12 +16,14 @@ public abstract class Enemy {
     protected boolean alive = true;
     protected int slowTickLimit = 120;
 	protected int slowTick = slowTickLimit;
+    protected EnemyManager enemyManager;
 
-    public Enemy(float x, float y, int ID, int enemyType) {
+    public Enemy(float x, float y, int ID, int enemyType, EnemyManager enemyManager) {
         this.x = x;
         this.y = y;
         this.ID = ID;
         this.enemyType = enemyType;
+        this.enemyManager = enemyManager;
         bounds = new Rectangle((int)x, (int)y, 32, 32);
         lastDir = -1;
         setStartHealth();
@@ -35,7 +40,7 @@ public abstract class Enemy {
     }
 
     private void setStartHealth() {
-        this.health = helper.Constants.Enemies.GetStartHealth(enemyType);
+        this.health = GetStartHealth(enemyType);
         this.maxHealth = this.health;
     }
 
@@ -43,6 +48,7 @@ public abstract class Enemy {
         this.health -= damage;
         if (this.health <= 0) {
             this.alive = false;
+            enemyManager.rewardPlayer(GetEnemyReward(enemyType));
         }
     }
 

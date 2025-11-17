@@ -24,6 +24,20 @@ public class Constants {
         public static final int KNIGHT = 2;
         public static final int WOLF = 3;
 
+        public static int GetEnemyReward(int enemyType) {
+            switch (enemyType) {
+                case ORC:
+                    return 5;
+                case BAT:
+                    return 5;
+                case KNIGHT:
+                    return 25;
+                case WOLF:
+                    return 10;
+            }
+            return 0;
+        }
+
         public static float GetSpeed(int enemyType) {
 			switch (enemyType) {
 			case ORC:
@@ -61,13 +75,13 @@ public class Constants {
         public static String getName(int towerType) {
             switch (towerType) {
                 case CANON_TOWER:
-                    return "Canon Tower";
+                    return "Canon";
                 case ARCHER_TOWER:
-                    return "Archer Tower";
+                    return "Archer";
                 case WIZARD_TOWER:
-                    return "Wizard Tower";
+                    return "Wizard";
                 default:
-                    return "Unknown Tower";
+                    return "Unknown";
             }
         }
 
@@ -108,7 +122,20 @@ public class Constants {
                 default:
                     return 0;
             }
-        }        
+        }    
+        
+        public static int getTowerCost(int towerType) {
+            switch (towerType) {
+                case CANON_TOWER:
+                    return 65;
+                case ARCHER_TOWER:
+                    return 35;
+                case WIZARD_TOWER:
+                    return 50;
+                default:
+                    return 0;
+            }
+        }
     }
 
     public static class Projectiles{

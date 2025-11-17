@@ -30,6 +30,7 @@ public class Playing extends GameScene implements SceneMethods {
     private PathPoint start, end;
     private Tower selectedTower;
     private int mouseX, mouseY;
+    private int goldTick = 0;
 
     public Playing(Game game) {
         super(game);
@@ -46,6 +47,11 @@ public class Playing extends GameScene implements SceneMethods {
 
     public void update() {
         waveManager.update();
+
+        goldTick++;
+        if(goldTick % (60*3) == 0) {
+            actionBar.addGold(1);
+        }
 
         if(isAllEnemiesDead()) {
             if(isThereMoreWaves()){
@@ -109,7 +115,6 @@ public class Playing extends GameScene implements SceneMethods {
         projectilManager.draw(g);
         drawSelectedTower(g);
         drawHilightedTile(g);
-        drawWavesInfo(g);
     }
 
     private void drawHilightedTile(Graphics g) {
@@ -123,10 +128,6 @@ public class Playing extends GameScene implements SceneMethods {
         if (selectedTower != null) {
             g.drawImage(towerManager.getTowerImgs()[selectedTower.getTowerType()], mouseX, mouseY, null);
         }
-    }
-
-    private void drawWavesInfo(Graphics g) {
-        
     }
 
     private void drawLevel(Graphics g) {
@@ -164,6 +165,14 @@ public class Playing extends GameScene implements SceneMethods {
     public void shootEnemy(Tower t, Enemy e) {
         projectilManager.newProjectile(t, e);
     }
+        
+    private Tower getTowerAt(int x, int y) {
+        return towerManager.getTowerAt(x, y);
+    }
+
+    private void removeGold(int towerType) {
+        actionBar.payForTower(towerType);
+    }
 
     @Override
     public void mouseClicked(int x, int y) {
@@ -174,6 +183,7 @@ public class Playing extends GameScene implements SceneMethods {
                 if(getTileType(mouseX, mouseY) == GRASS_TILE) {
                     if(getTowerAt(mouseX, mouseY) == null) {
                         towerManager.addTower(selectedTower, mouseX, mouseY);
+                        removeGold(selectedTower.getTowerType());
                         this.selectedTower = null;
                     }
                     return;
@@ -187,10 +197,6 @@ public class Playing extends GameScene implements SceneMethods {
                 }
             }
         }
-    }
-    
-    private Tower getTowerAt(int x, int y) {
-        return towerManager.getTowerAt(x, y);
     }
 
     @Override
@@ -216,6 +222,10 @@ public class Playing extends GameScene implements SceneMethods {
         if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             this.selectedTower = null;
         }
+    }
+
+    public void rewardPlayer(int reward) {
+        actionBar.addGold(reward);
     }
 
     public EnemyManager getEnemyManager() {
