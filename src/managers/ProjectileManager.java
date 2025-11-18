@@ -213,5 +213,4 @@ public class ProjectileManager {
 
 		proj_id = 0;
 	}
-
 }

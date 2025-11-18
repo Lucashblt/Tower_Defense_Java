@@ -100,4 +100,9 @@ public class TowerManager {
             }
         }
     }
+
+    public void reset() {
+        towers.clear();
+        towerIdCounter = 0;
+    }
 }

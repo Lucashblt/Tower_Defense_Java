@@ -22,7 +22,9 @@ public class Render {
             case SIMULATION_PERFORMANCE:
                 game.getSimulationPerformance().render(g);
                 break;
-        
+            case GAME_OVER:
+                game.getGameOver().render(g);
+                break;
             default:
                 break;
         }

@@ -195,7 +195,7 @@ public class EnemyManager {
             e.move(GetSpeed(e.getEnemyType()), e.getLastDir());
         } else if(isAtEnd(e)){
             e.kill();
-            System.err.println("Enemy reached the end!");
+            playing.removeOneLive();
         } else {
             setNewDirectionAndMove(e);
         }
@@ -216,6 +216,10 @@ public class EnemyManager {
 
     public void rewardPlayer(int reward) {
         playing.rewardPlayer(reward);
+    }
+
+    public void reset() {
+        enemies.clear();
     }
 
 }

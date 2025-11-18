@@ -12,15 +12,13 @@ import static main.GameStates.*;
 
 public class ActionBar extends Bar {
     
-    private MyButton btnMenu, btnPause;
+    private MyButton btnMenu, btnPause, sellTower, upgradeTower;
     private Playing playing;
     private MyButton[] towerButtons;
-    private Tower selectedTower;
-    private Tower displayedTower;
+    private Tower selectedTower, displayedTower;
     private DecimalFormat formatter;
-    private int gold = 100, towerCostType;
+    private int gold = 100, towerCostType, lives = 3;
     private boolean showTowerCosts;
-    private MyButton sellTower, upgradeTower;
 
     public ActionBar(int x, int y, int width, int height, Playing playing) {
         super(x, y, width, height);
@@ -81,6 +79,8 @@ public class ActionBar extends Bar {
             drawTowerCosts(g);
         }
 
+        drawLivesInfo(g);
+
         if(playing.isGamePaused()) {
             g.setColor(new Color(0, 0, 0, 150));
             g.fillRect(0, 0, 640, 640);
@@ -88,6 +88,12 @@ public class ActionBar extends Bar {
             g.setFont(new Font("LucidaSans", Font.BOLD, 50));
             g.drawString("GAME PAUSED", 150, 320);
         }
+    }
+
+    private void drawLivesInfo(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("LucidaSans", Font.BOLD, 20));
+        g.drawString("Lives: " + lives, 120, 735);
     }
 
     private void drawTowerCosts(Graphics g) {
@@ -121,7 +127,7 @@ public class ActionBar extends Bar {
     private void drawGoldAmount(Graphics g) {
         g.setColor(Color.BLACK);
         g.setFont(new Font("LucidaSans", Font.BOLD, 20));
-        g.drawString("Gold: " + gold, 120, 720);
+        g.drawString("Gold: " + gold, 120, 715);
     }
 
     private void drawWavesInfo(Graphics g) {
@@ -347,5 +353,25 @@ public class ActionBar extends Bar {
 
     public void resetDisplayedTower() {
         this.displayedTower = null;
+    }
+
+    public void removeOneLive() {
+        this.lives--;
+        if(lives <= 0) {
+            setGameState(GAME_OVER);
+        }
+    }
+
+    public int getLives() {
+        return lives;
+    }
+
+    public void reset() {
+        this.lives = 3;
+        this.gold = 100;
+        this.displayedTower = null;
+        this.selectedTower = null;
+        this.towerCostType = 0;
+        this.showTowerCosts = false;
     }
 }

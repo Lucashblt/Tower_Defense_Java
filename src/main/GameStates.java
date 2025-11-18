@@ -4,7 +4,8 @@ public enum GameStates {
     
     PLAYING,
     MENU,
-    SIMULATION_PERFORMANCE;
+    SIMULATION_PERFORMANCE,
+    GAME_OVER;
 
     public static GameStates gameState = MENU;
 
