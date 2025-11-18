@@ -17,13 +17,19 @@ public abstract class Enemy {
     protected int slowTickLimit = 120;
 	protected int slowTick = slowTickLimit;
     protected EnemyManager enemyManager;
+    protected int waveNumber;
 
     public Enemy(float x, float y, int ID, int enemyType, EnemyManager enemyManager) {
+        this(x, y, ID, enemyType, enemyManager, 0);
+    }
+
+    public Enemy(float x, float y, int ID, int enemyType, EnemyManager enemyManager, int waveNumber) {
         this.x = x;
         this.y = y;
         this.ID = ID;
         this.enemyType = enemyType;
         this.enemyManager = enemyManager;
+        this.waveNumber = waveNumber;
         bounds = new Rectangle((int)x, (int)y, 32, 32);
         lastDir = -1;
         setStartHealth();
@@ -40,7 +46,7 @@ public abstract class Enemy {
     }
 
     private void setStartHealth() {
-        this.health = GetStartHealth(enemyType);
+        this.health = GetStartHealth(enemyType, waveNumber);
         this.maxHealth = this.health;
     }
 
@@ -65,6 +71,11 @@ public abstract class Enemy {
             slowTick++;
             speed *= 0.5f;
         }
+
+        // Apply wave-based speed buff
+        int buffLevel = waveNumber / 5;
+        float buffMultiplier = 1.0f + (buffLevel * 0.10f);
+        speed *= buffMultiplier;
 
         switch (dir) {
             case LEFT:

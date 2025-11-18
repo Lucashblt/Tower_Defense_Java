@@ -75,7 +75,7 @@ public class Tower {
 
         switch (towerType) {
             case ARCHER_TOWER:  
-                this.damage += 3;
+                this.damage += 2;
                 this.range += 20;     
                 this.cooldown -= 5;         
                 break;

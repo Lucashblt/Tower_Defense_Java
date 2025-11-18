@@ -27,6 +27,7 @@ public class EnemyManager {
     private PathPoint start, end;
     private final int HPBARWIDTH = 20;
     private BufferedImage slowEffect;
+    private int currentWaveNumber = 0;
 
     public EnemyManager(Playing playing, PathPoint start, PathPoint end) {
         this.playing = playing;
@@ -167,16 +168,16 @@ public class EnemyManager {
         int y = start.getyCord() * 32;
         switch (enemyType) {
             case ORC:
-                enemies.add(new Orc(x, y, 0, this));
+                enemies.add(new Orc(x, y, 0, this, currentWaveNumber));
                 break;
             case WOLF:
-                enemies.add(new Wolf(x, y, 0, this));
+                enemies.add(new Wolf(x, y, 0, this, currentWaveNumber));
                 break;
             case BAT:
-                enemies.add(new Bat(x, y, 0, this));
+                enemies.add(new Bat(x, y, 0, this, currentWaveNumber));
                 break;
             case KNIGHT:
-                enemies.add(new Knight(x, y, 0, this));
+                enemies.add(new Knight(x, y, 0, this, currentWaveNumber));
                 break;
             default:
                 break;
@@ -218,8 +219,13 @@ public class EnemyManager {
         playing.rewardPlayer(reward);
     }
 
+    public void setCurrentWaveNumber(int waveNumber) {
+        this.currentWaveNumber = waveNumber;
+    }
+
     public void reset() {
         enemies.clear();
+        currentWaveNumber = 0;
     }
 
 }

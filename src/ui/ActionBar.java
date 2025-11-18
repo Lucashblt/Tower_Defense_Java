@@ -199,7 +199,7 @@ public class ActionBar extends Bar {
     }
 
     private int getUpgradeAmount(Tower displayedTower) {
-        return (int)(Towers.getTowerCost(displayedTower.getTowerType()) * 0.3f);
+        return (int)(Towers.getTowerCost(displayedTower.getTowerType()) * 0.5f);
     }
 
     private int getSellAmount(Tower displayedTower) {

@@ -9,4 +9,8 @@ public class Bat extends Enemy {
     public Bat(float x, float y, int ID, EnemyManager enemyManager) {
         super(x, y, ID, BAT, enemyManager);
     }
+
+    public Bat(float x, float y, int ID, EnemyManager enemyManager, int waveNumber) {
+        super(x, y, ID, BAT, enemyManager, waveNumber);
+    }
 }

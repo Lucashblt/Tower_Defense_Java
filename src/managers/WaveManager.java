@@ -53,10 +53,8 @@ public class WaveManager {
             add(0);
             add(0);
             add(0);
-            add(0);
         }}));
         waves.add(new Wave(new ArrayList<Integer>() {{
-            add(1);
             add(1);
             add(1);
             add(1);
@@ -67,7 +65,21 @@ public class WaveManager {
             add(1);
             add(2);
             add(3);
-        }}));        
+        }}));    
+
+        // generate additional waves up to 10 total waves
+        int totalWaves = 10; // total number of waves desired
+        java.util.Random rnd = new java.util.Random();
+        int baseEnemies = 5; // starting number of enemies for wave 1/2
+        // we already added 3 waves above (indexes 0,1,2), so start from index 3
+        for (int w = 3; w < totalWaves; w++) {
+            int enemiesCount = baseEnemies + (w - 2) * 2; // increase enemy count with wave index
+            ArrayList<Integer> enemyList = new ArrayList<>();
+            for (int e = 0; e < enemiesCount; e++) {
+                enemyList.add(rnd.nextInt(4)); // random enemy id in [0,3]
+            }
+            waves.add(new Wave(enemyList));
+        }
     }
 
     public void resetEnemyIndex() {

@@ -31,39 +31,63 @@ public class Constants {
                 case BAT:
                     return 5;
                 case KNIGHT:
-                    return 25;
+                    return 17;
                 case WOLF:
-                    return 10;
+                    return 8;
             }
             return 0;
         }
 
         public static float GetSpeed(int enemyType) {
+			return GetSpeed(enemyType, 0);
+		}
+
+		public static float GetSpeed(int enemyType, int waveNumber) {
+			float baseSpeed = 0;
 			switch (enemyType) {
 			case ORC:
-				return 0.5f;
+				baseSpeed = 0.5f;
+				break;
 			case BAT:
-				return 0.7f;
+				baseSpeed = 0.7f;
+				break;
 			case KNIGHT:
-				return 0.45f;
+				baseSpeed = 0.45f;
+				break;
 			case WOLF:
-				return 0.85f;
+				baseSpeed = 0.85f;
+				break;
 			}
-			return 0;
+			// Buff speed by 10% every 5 waves
+			int buffLevel = waveNumber / 5;
+			float buffMultiplier = 1.0f + (buffLevel * 0.10f);
+			return baseSpeed * buffMultiplier;
 		}
 
         public static int GetStartHealth(int enemyType) {
+            return GetStartHealth(enemyType, 0);
+        }
+
+        public static int GetStartHealth(int enemyType, int waveNumber) {
+            int baseHealth = 0;
             switch (enemyType) {
                 case ORC:
-                    return 85;
+                    baseHealth = 85;
+                    break;
                 case BAT:
-                    return 100;
+                    baseHealth = 100;
+                    break;
                 case KNIGHT:
-                    return 400;
+                    baseHealth = 400;
+                    break;
                 case WOLF:
-                    return 125;
+                    baseHealth = 125;
+                    break;
             }
-            return 0;
+            // Buff health by 15% every 5 waves
+            int buffLevel = waveNumber / 5;
+            float buffMultiplier = 1.0f + (buffLevel * 0.15f);
+            return (int)(baseHealth * buffMultiplier);
         }
     }
 
@@ -90,7 +114,7 @@ public class Constants {
                 case CANON_TOWER:
                     return 15;
                 case ARCHER_TOWER:
-                    return 7;
+                    return 5;
                 case WIZARD_TOWER:
                     return 1;
                 default:

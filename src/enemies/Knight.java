@@ -9,4 +9,8 @@ public class Knight extends Enemy {
     public Knight(float x, float y, int ID, EnemyManager enemyManager) {
         super(x, y, ID, KNIGHT, enemyManager);
     }
+
+    public Knight(float x, float y, int ID, EnemyManager enemyManager, int waveNumber) {
+        super(x, y, ID, KNIGHT, enemyManager, waveNumber);
+    }
 }

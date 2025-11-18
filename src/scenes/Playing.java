@@ -64,6 +64,7 @@ public class Playing extends GameScene implements SceneMethods {
                         waveManager.increaseWaveIndex();
                         enemyManager.getEnemies().clear();
                         waveManager.resetEnemyIndex();
+                        enemyManager.setCurrentWaveNumber(waveManager.getWaveIndex());
                     }
                 } else {
                     // Toutes les vagues sont terminées et tous les ennemis sont morts = VICTOIRE!
