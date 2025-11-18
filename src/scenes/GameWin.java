@@ -14,12 +14,12 @@ import javax.imageio.ImageIO;
 import main.Game;
 import ui.MyButton;
 
-public class GameOver extends GameScene implements SceneMethods {
+public class GameWin extends GameScene implements SceneMethods {
 
     private MyButton btnMenu, btnReplay;
     private BufferedImage img;
 
-    public GameOver(Game game) {
+    public GameWin(Game game) {
         super(game);
         initButtons();  
         importImg();
@@ -56,17 +56,17 @@ public class GameOver extends GameScene implements SceneMethods {
         }
     }
 
-    private void drawGameOverText(Graphics g) {
-        g.setColor(java.awt.Color.RED);
+    private void drawGameWinText(Graphics g) {
+        g.setColor(java.awt.Color.GREEN);
         g.setFont(new Font("LucidaSans", Font.BOLD, 50));
-        g.drawString("GAME OVER", 170, 370);
+        g.drawString("YOU WIN!", 195, 370);
     }
 
     @Override
     public void render(Graphics g) {
         g.drawImage(img, 0, 0, null);
 
-        drawGameOverText(g);
+        drawGameWinText(g);
          
         btnMenu.draw(g);
         btnReplay.draw(g);

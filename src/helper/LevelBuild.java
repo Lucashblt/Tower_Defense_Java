@@ -7,6 +7,32 @@ public class LevelBuild {
     
     public static int[][] getLevelData() {
 
+        /*
+         * Legend:
+         * 0  - GRASS
+         * 1  - WATER
+         * 2  - ROAD_LR
+         * 3  - ROAD_TB
+         * 4  - ROAD_B_TO_R
+         * 5  - ROAD_L_TO_B
+         * 6  - ROAD_L_TO_T
+         * 7  - ROAD_T_TO_R
+         * 8  - BL_WATER_CORNER
+         * 9  - TL_WATER_CORNER
+         * 10 - TR_WATER_CORNER
+         * 11 - BR_WATER_CORNER
+         * 12 - T_WATER (beach top)
+         * 13 - R_WATER (beach right)
+         * 14 - B_WATER (beach bottom)
+         * 15 - L_WATER (beach left)
+         * 16 - TL_ISLE
+         * 17 - TR_ISLE
+         * 18 - BR_ISLE
+         * 19 - BL_ISLE
+         * 20 - START_PATH
+         * 21 - END_PATH
+         */
+
         int[][] lvl = {
             
             { 0, 0, 0, 0, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },

@@ -7,6 +7,7 @@ import scenes.Menu;
 import scenes.Playing;
 import scenes.SimulationPerformance;
 import scenes.GameOver;
+import scenes.GameWin;
 
 public class Game extends JFrame implements Runnable {
 
@@ -21,6 +22,7 @@ public class Game extends JFrame implements Runnable {
 	private Menu menu;
 	private SimulationPerformance simulationPerformance;
 	private GameOver gameOver;
+	private GameWin gameWin;
 	private Playing playing;
 	private TileManager tileManager;
 
@@ -43,6 +45,7 @@ public class Game extends JFrame implements Runnable {
 		menu = new Menu(this);
 		simulationPerformance = new SimulationPerformance(this);
 		gameOver = new GameOver(this);
+		gameWin = new GameWin(this);
 		playing = new Playing(this);
 	}
 
@@ -131,6 +134,10 @@ public class Game extends JFrame implements Runnable {
 
 	public GameOver getGameOver() {
 		return gameOver;
+	}
+
+	public GameWin getGameWin() {
+		return gameWin;
 	}
 
 	public TileManager getTileManager() {

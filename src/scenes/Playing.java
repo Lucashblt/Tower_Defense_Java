@@ -9,6 +9,8 @@ import java.awt.event.KeyEvent;
 import enemies.Enemy;
 import helper.LevelBuild;
 import main.Game;
+import main.GameStates;
+import static main.GameStates.*;
 import managers.EnemyManager;
 import managers.ProjectileManager;
 import managers.TileManager;
@@ -63,6 +65,9 @@ public class Playing extends GameScene implements SceneMethods {
                         enemyManager.getEnemies().clear();
                         waveManager.resetEnemyIndex();
                     }
+                } else {
+                    // Toutes les vagues sont terminées et tous les ennemis sont morts = VICTOIRE!
+                    setGameState(GameStates.GAME_WIN);
                 }
             }
 

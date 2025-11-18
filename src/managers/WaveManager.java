@@ -50,24 +50,24 @@ public class WaveManager {
     private void createWaves() {
         waves.add(new Wave(new ArrayList<Integer>() {{
             add(0);
+            add(0);
+            add(0);
+            add(0);
+            add(0);
+        }}));
+        waves.add(new Wave(new ArrayList<Integer>() {{
+            add(1);
+            add(1);
+            add(1);
+            add(1);
+            add(1);
+        }}));
+        waves.add(new Wave(new ArrayList<Integer>() {{
+            add(0);
             add(1);
             add(2);
             add(3);
-        }}));
-        waves.add(new Wave(new ArrayList<Integer>() {{
-            add(0);
-            add(0);
-            add(0);
-            add(0);
-            add(0);
-        }}));
-        waves.add(new Wave(new ArrayList<Integer>() {{
-            add(1);
-            add(1);
-            add(1);
-            add(1);
-            add(1);
-        }}));
+        }}));        
     }
 
     public void resetEnemyIndex() {
