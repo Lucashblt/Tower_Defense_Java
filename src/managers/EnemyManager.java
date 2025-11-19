@@ -22,12 +22,16 @@ import static helper.Constants.Enemies.*;
 public class EnemyManager {
     
     private Playing playing;
+    private TileManager tileManager;
+    private int[][] level;
     private BufferedImage[] enemyImgs;
     private ArrayList<Enemy> enemies = new ArrayList<>();
     private PathPoint start, end;
     private final int HPBARWIDTH = 20;
     private BufferedImage slowEffect;
-    private int currentWaveNumber = 0;
+    private int currentWaveNumber = 0; // Pour le mode normal
+    private int totalSpawned = 0; // Pour le mode simulation
+    private boolean isSimulationMode = false;
 
     public EnemyManager(Playing playing, PathPoint start, PathPoint end) {
         this.playing = playing;
@@ -36,6 +40,19 @@ public class EnemyManager {
         enemyImgs = new BufferedImage[4];
         loadEnemyImgs();
         loadSlowEffect();
+    }
+    
+    public void setSimulationMode(boolean isSimulationMode) {
+        this.isSimulationMode = isSimulationMode;
+    }
+    
+    public boolean isSimulationMode() {
+        return isSimulationMode;
+    }
+    
+    public void setTileManagerAndLevel(TileManager tileManager, int[][] level) {
+        this.tileManager = tileManager;
+        this.level = level;
     }
 
     public void update() {
@@ -91,7 +108,22 @@ public class EnemyManager {
     }
 
     private int getTileType(int x, int y) {
-        return playing.getTileType(x, y);
+        if (playing != null) {
+            return playing.getTileType(x, y);
+        } else if (tileManager != null && level != null) {
+            // Calculer le type de tuile directement
+            int xCord = x / 32;
+            int yCord = y / 32;
+            
+            if (xCord < 0 || xCord >= level[0].length)
+                return 0;
+            if (yCord < 0 || yCord >= level.length)
+                return 0;
+            
+            int id = level[yCord][xCord];
+            return tileManager.getTile(id).getTileType();
+        }
+        return 0;
     }
 
     private void setNewDirectionAndMove(Enemy e){
@@ -166,21 +198,25 @@ public class EnemyManager {
     public void addEnemy(int enemyType) {
         int x = start.getxCord() * 32;
         int y = start.getyCord() * 32;
+        int enemyIndex = isSimulationMode ? totalSpawned : currentWaveNumber;
         switch (enemyType) {
             case ORC:
-                enemies.add(new Orc(x, y, 0, this, currentWaveNumber));
+                enemies.add(new Orc(x, y, 0, this, enemyIndex));
                 break;
             case WOLF:
-                enemies.add(new Wolf(x, y, 0, this, currentWaveNumber));
+                enemies.add(new Wolf(x, y, 0, this, enemyIndex));
                 break;
             case BAT:
-                enemies.add(new Bat(x, y, 0, this, currentWaveNumber));
+                enemies.add(new Bat(x, y, 0, this, enemyIndex));
                 break;
             case KNIGHT:
-                enemies.add(new Knight(x, y, 0, this, currentWaveNumber));
+                enemies.add(new Knight(x, y, 0, this, enemyIndex));
                 break;
             default:
                 break;
+        }
+        if (isSimulationMode) {
+            totalSpawned++;
         }
     }
 
@@ -196,7 +232,9 @@ public class EnemyManager {
             e.move(GetSpeed(e.getEnemyType()), e.getLastDir());
         } else if(isAtEnd(e)){
             e.kill();
-            playing.removeOneLive();
+            if (playing != null) {
+                playing.removeOneLive();
+            }
         } else {
             setNewDirectionAndMove(e);
         }
@@ -216,7 +254,9 @@ public class EnemyManager {
     }
 
     public void rewardPlayer(int reward) {
-        playing.rewardPlayer(reward);
+        if (playing != null) {
+            playing.rewardPlayer(reward);
+        }
     }
 
     public void setCurrentWaveNumber(int waveNumber) {
@@ -226,6 +266,7 @@ public class EnemyManager {
     public void reset() {
         enemies.clear();
         currentWaveNumber = 0;
+        totalSpawned = 0;
     }
 
 }

@@ -17,19 +17,19 @@ public abstract class Enemy {
     protected int slowTickLimit = 120;
 	protected int slowTick = slowTickLimit;
     protected EnemyManager enemyManager;
-    protected int waveNumber;
+    protected int enemyIndex; // Index de spawn (buff tous les 100 ennemis)
 
     public Enemy(float x, float y, int ID, int enemyType, EnemyManager enemyManager) {
         this(x, y, ID, enemyType, enemyManager, 0);
     }
 
-    public Enemy(float x, float y, int ID, int enemyType, EnemyManager enemyManager, int waveNumber) {
+    public Enemy(float x, float y, int ID, int enemyType, EnemyManager enemyManager, int enemyIndex) {
         this.x = x;
         this.y = y;
         this.ID = ID;
         this.enemyType = enemyType;
         this.enemyManager = enemyManager;
-        this.waveNumber = waveNumber;
+        this.enemyIndex = enemyIndex;
         bounds = new Rectangle((int)x, (int)y, 32, 32);
         lastDir = -1;
         setStartHealth();
@@ -46,7 +46,14 @@ public abstract class Enemy {
     }
 
     private void setStartHealth() {
-        this.health = GetStartHealth(enemyType, waveNumber);
+        if (enemyManager != null && enemyManager.isSimulationMode()) {
+            // Buffs tous les 100 ennemis
+            int buffLevel = enemyIndex / 100;
+            this.health = helper.Constants.Enemies.GetStartHealthSimulation(enemyType, buffLevel);
+        } else {
+            // Normal mode utilise toujours les waves (compatibilité)
+            this.health = GetStartHealth(enemyType, enemyIndex);
+        }
         this.maxHealth = this.health;
     }
 
@@ -72,10 +79,18 @@ public abstract class Enemy {
             speed *= 0.5f;
         }
 
-        // Apply wave-based speed buff
-        int buffLevel = waveNumber / 5;
-        float buffMultiplier = 1.0f + (buffLevel * 0.10f);
-        speed *= buffMultiplier;
+        // Apply speed buff
+        if (enemyManager != null && enemyManager.isSimulationMode()) {
+            // Simulation mode: 0.01% buff tous les 100 ennemis
+            int buffLevel = enemyIndex / 100;
+            float buffMultiplier = 1.0f + (buffLevel * 0.0001f);
+            speed *= buffMultiplier;
+        } else {
+            // Normal mode: 10% buff every 5 waves
+            int buffLevel = enemyIndex / 5;
+            float buffMultiplier = 1.0f + (buffLevel * 0.10f);
+            speed *= buffMultiplier;
+        }
 
         switch (dir) {
             case LEFT:

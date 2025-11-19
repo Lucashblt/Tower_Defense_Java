@@ -62,8 +62,7 @@ public class Constants {
 			int buffLevel = waveNumber / 5;
 			float buffMultiplier = 1.0f + (buffLevel * 0.10f);
 			return baseSpeed * buffMultiplier;
-		}
-
+		}  
         public static int GetStartHealth(int enemyType) {
             return GetStartHealth(enemyType, 0);
         }
@@ -87,6 +86,27 @@ public class Constants {
             // Buff health by 15% every 5 waves
             int buffLevel = waveNumber / 5;
             float buffMultiplier = 1.0f + (buffLevel * 0.15f);
+            return (int)(baseHealth * buffMultiplier);
+        }
+        
+        public static int GetStartHealthSimulation(int enemyType, int buffLevel) {
+            int baseHealth = 0;
+            switch (enemyType) {
+                case ORC:
+                    baseHealth = 85;
+                    break;
+                case BAT:
+                    baseHealth = 100;
+                    break;
+                case KNIGHT:
+                    baseHealth = 400;
+                    break;
+                case WOLF:
+                    baseHealth = 125;
+                    break;
+            }
+            // Simulation mode: Buff health by 0.3% every 100 enemies
+            float buffMultiplier = 1.0f + (buffLevel * 0.003f);
             return (int)(baseHealth * buffMultiplier);
         }
     }

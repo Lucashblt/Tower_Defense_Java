@@ -55,6 +55,7 @@ public class Menu extends GameScene implements SceneMethods {
         if(bPlaying.getBounds().contains(x, y)) {
             setGameState(PLAYING);
         } else if (bSimulationPerf.getBounds().contains(x, y)) {
+            game.getSimulationPerformance().onEnter();
             setGameState(SIMULATION_PERFORMANCE);
         } else if (bQuit.getBounds().contains(x, y)) {
             System.exit(0);

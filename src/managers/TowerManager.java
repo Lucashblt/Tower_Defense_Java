@@ -31,7 +31,10 @@ public class TowerManager {
         }
     }
 
-    private void attackEnemyIfClose(Tower t) {    
+    private void attackEnemyIfClose(Tower t) {
+        if (playing == null) {
+            return;
+        }
         ArrayList<Enemy> enemies = playing.getEnemyManager().getEnemies();
         for(int i = 0; i < enemies.size(); i++){
             Enemy e = enemies.get(i);
@@ -52,8 +55,11 @@ public class TowerManager {
     }
 
     public void addTower(Tower selectedTower, int x, int y) {
-
         towers.add(new Tower(x, y, towerIdCounter++, selectedTower.getTowerType()));
+    }
+
+    public void addTowerDirect(Tower tower) {
+        towers.add(tower);
     }
 
     public void update() {
@@ -99,6 +105,14 @@ public class TowerManager {
                 return;
             }
         }
+    }
+
+    public int getTowerCount() {
+        return towers.size();
+    }
+
+    public ArrayList<Tower> getTowers() {
+        return towers;
     }
 
     public void reset() {

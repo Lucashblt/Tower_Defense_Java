@@ -17,6 +17,7 @@ import static helper.Constants.Projectiles.*;
 public class ProjectileManager {
 
 	private Playing playing;
+	private EnemyManager enemyManager;
 	private ArrayList<Projectile> projectiles = new ArrayList<>();
 	private ArrayList<Explosion> explosions = new ArrayList<>();
 	private BufferedImage[] proj_imgs, explo_imgs;
@@ -25,6 +26,10 @@ public class ProjectileManager {
 	public ProjectileManager(Playing playing) {
 		this.playing = playing;
 		importImgs();
+	}
+
+	public void setEnemyManager(EnemyManager enemyManager) {
+		this.enemyManager = enemyManager;
 	}
 
 	private void importImgs() {
@@ -103,7 +108,18 @@ public class ProjectileManager {
 	}
 
 	private void explodeOnEnemies(Projectile p) {
-		for (Enemy e : playing.getEnemyManager().getEnemies()) {
+		ArrayList<Enemy> enemies = null;
+		if (playing != null) {
+			enemies = playing.getEnemyManager().getEnemies();
+		} else if (enemyManager != null) {
+			enemies = enemyManager.getEnemies();
+		}
+		
+		if (enemies == null) {
+			return;
+		}
+		
+		for (Enemy e : enemies) {
 			if (e.isAlive()) {
 				float radius = 40.0f;
 
@@ -121,7 +137,18 @@ public class ProjectileManager {
 	}
 
 	private boolean isProjHittingEnemy(Projectile p) {
-		for (Enemy e : playing.getEnemyManager().getEnemies()) {
+		ArrayList<Enemy> enemies = null;
+		if (playing != null) {
+			enemies = playing.getEnemyManager().getEnemies();
+		} else if (enemyManager != null) {
+			enemies = enemyManager.getEnemies();
+		}
+		
+		if (enemies == null) {
+			return false;
+		}
+		
+		for (Enemy e : enemies) {
 			if (e.isAlive())
 				if (e.getBounds().contains(p.getPos())) {
 					e.hurt(p.getDmg());
@@ -146,7 +173,9 @@ public class ProjectileManager {
 	public void draw(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 
-		for (Projectile p : projectiles)
+		// Créer une copie pour éviter ConcurrentModificationException
+		ArrayList<Projectile> projectilesCopy = new ArrayList<>(projectiles);
+		for (Projectile p : projectilesCopy)
 			if (p.isActive()) {
 				if (p.getProjectileType() == ARROW) {
 					g2d.translate(p.getPos().x, p.getPos().y);
@@ -164,7 +193,9 @@ public class ProjectileManager {
 	}
 
 	private void drawExplosions(Graphics2D g2d) {
-		for (Explosion e : explosions)
+		// Create a copy to avoid ConcurrentModificationException
+		ArrayList<Explosion> explosionsCopy = new ArrayList<>(explosions);
+		for (Explosion e : explosionsCopy)
 			if (e.getIndex() < 7)
 				g2d.drawImage(explo_imgs[e.getIndex()], (int) e.getPos().x - 16, (int) e.getPos().y - 16, null);
 	}
@@ -205,6 +236,16 @@ public class ProjectileManager {
 		public Point2D.Float getPos() {
 			return pos;
 		}
+	}
+
+	public int getProjectileCount() {
+		int count = 0;
+		for (Projectile p : projectiles) {
+			if (p.isActive()) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	public void reset() {

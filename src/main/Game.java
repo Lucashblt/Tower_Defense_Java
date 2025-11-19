@@ -25,6 +25,10 @@ public class Game extends JFrame implements Runnable {
 	private GameWin gameWin;
 	private Playing playing;
 	private TileManager tileManager;
+	
+	// FPS et UPS actuels
+	private int currentFPS = 0;
+	private int currentUPS = 0;
 
 	public Game() {	
 		initClasses();
@@ -64,6 +68,7 @@ public class Game extends JFrame implements Runnable {
 				playing.update();
 				break;
 			case SIMULATION_PERFORMANCE:
+				simulationPerformance.update();
 				break;
 			default:
 				break;
@@ -108,6 +113,8 @@ public class Game extends JFrame implements Runnable {
 
 			if(System.currentTimeMillis() - lastTimeCheck >= 1000) {
 				System.out.println("FPS : " + frames + " | UPS : " + updates);
+				currentFPS = frames;
+				currentUPS = updates;
 				frames = 0;
 				updates = 0;
 				lastTimeCheck = System.currentTimeMillis();	
@@ -142,5 +149,13 @@ public class Game extends JFrame implements Runnable {
 
 	public TileManager getTileManager() {
 		return tileManager;
+	}
+	
+	public int getCurrentFPS() {
+		return currentFPS;
+	}
+	
+	public int getCurrentUPS() {
+		return currentUPS;
 	}
 }
