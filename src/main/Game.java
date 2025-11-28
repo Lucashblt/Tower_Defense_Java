@@ -14,7 +14,7 @@ public class Game extends JFrame implements Runnable {
 	private GameScreen gameScreen;
 	private Thread gameThread;
 
-	private final double FPS_SET = 120.0;
+	private final double FPS_SET = 160.0;
 	private final double UPS_SET = 60.0;
 		
 	//Classes
@@ -90,6 +90,7 @@ public class Game extends JFrame implements Runnable {
 		long lastFrame = System.nanoTime();
 		long lastUpdate = System.nanoTime();
 		long lastTimeCheck	= System.currentTimeMillis();
+		long lastGCCheck = System.currentTimeMillis();
 
 		int frames = 0;
 		int updates = 0;
@@ -118,6 +119,19 @@ public class Game extends JFrame implements Runnable {
 				frames = 0;
 				updates = 0;
 				lastTimeCheck = System.currentTimeMillis();	
+			}
+			
+			// GC plus agressif toutes les 5 secondes pour stabilité
+			if(System.currentTimeMillis() - lastGCCheck >= 5000) {
+				Runtime.getRuntime().gc();
+				lastGCCheck = System.currentTimeMillis();
+			}
+			
+			// Micro-pause pour éviter 100% CPU (améliore stabilité)
+			try {
+				Thread.sleep(0, 100); // 100 nanosecondes
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 			}
 		}
 	}

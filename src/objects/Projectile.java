@@ -2,7 +2,9 @@ package objects;
 
 import java.awt.geom.Point2D;
 
-public class Projectile {
+import helper.Poolable;
+
+public class Projectile implements Poolable {
     
     private Point2D.Float pos;
     private int id, projectileType, dmg;
@@ -19,12 +21,13 @@ public class Projectile {
         this.dmg = dmg;
     }
 
-    public void reuse(int x, int y, float xSpeed, float ySpeed, int dmg, float rotate) {
+    public void reuse(int x, int y, float xSpeed, float ySpeed, int dmg, float rotate, int projectileType) {
 		pos = new Point2D.Float(x, y);
 		this.xSpeed = xSpeed;
 		this.ySpeed = ySpeed;
 		this.dmg = dmg;
 		this.rotation = rotate;
+		this.projectileType = projectileType;
 		active = true;
 	}
 
@@ -57,11 +60,23 @@ public class Projectile {
         return projectileType;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public void reset() {
+        this.active = false;
+        this.pos.setLocation(0, 0);
+        this.xSpeed = 0;
+        this.ySpeed = 0;
+        this.dmg = 0;
+        this.rotation = 0;
+        this.projectileType = 0;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 }

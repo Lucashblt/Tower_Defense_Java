@@ -7,6 +7,9 @@ public class Tower {
     private int x, y, id, towerType, cdTick = 0, damage;
     private float range, cooldown;
     private int tier;
+    
+    // Cache pour optimisation POO
+    private int rangeSquared; // Range au carré pour comparaison rapide
 
     public Tower(int x, int y, int id, int towerType) {
         this.x = x;
@@ -17,6 +20,7 @@ public class Tower {
         setDefaultDamage();
         setDefaultRange();
         setCooldownTime();
+        updateRangeSquared();
     }
 
     public void update() {
@@ -37,6 +41,11 @@ public class Tower {
 
     private void setDefaultRange() {
         this.range = getDefaultRange(towerType);
+        updateRangeSquared();
+    }
+    
+    private void updateRangeSquared() {
+        this.rangeSquared = (int)(range * range);
     }
 
     private void setCooldownTime() {
@@ -65,6 +74,14 @@ public class Tower {
     public float getRange() {
         return range;
     }
+    
+    /**
+     * Retourne le carré de la portée pour comparaison rapide sans sqrt()
+     * Principe POO : Cache calculé pour optimisation
+     */
+    public int getRangeSquared() {
+        return rangeSquared;
+    }
 
     public float getCooldown() {
         return cooldown;
@@ -92,6 +109,7 @@ public class Tower {
             default:
                 break;
         }
+        updateRangeSquared(); // Mettre à jour le cache
     }
 
     public int getTier() {

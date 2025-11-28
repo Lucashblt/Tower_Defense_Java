@@ -4,8 +4,10 @@ import scenes.Playing;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
 import enemies.Bat;
 import enemies.Enemy;
@@ -13,6 +15,8 @@ import enemies.Knight;
 import enemies.Orc;
 import enemies.Wolf;
 import helper.LoadSave;
+import helper.ObjectPool;
+import helper.SpatialGrid;
 import objects.PathPoint;
 
 import static helper.Constants.Directions.*;
@@ -25,18 +29,41 @@ public class EnemyManager {
     private TileManager tileManager;
     private int[][] level;
     private BufferedImage[] enemyImgs;
-    private ArrayList<Enemy> enemies = new ArrayList<>();
+    
+    // Object Pooling pour réduire les allocations
+    private ObjectPool<Orc> orcPool;
+    private ObjectPool<Wolf> wolfPool;
+    private ObjectPool<Bat> batPool;
+    private ObjectPool<Knight> knightPool;
+    
+    // Liste unifiée des ennemis actifs
+    private ArrayList<Enemy> activeEnemies = new ArrayList<>();
+    
+    // Spatial partitioning pour optimiser les recherches
+    private SpatialGrid spatialGrid;
+    
     private PathPoint start, end;
     private final int HPBARWIDTH = 20;
     private BufferedImage slowEffect;
-    private int currentWaveNumber = 0; // Pour le mode normal
-    private int totalSpawned = 0; // Pour le mode simulation
+    private int currentWaveNumber = 0;
+    private int totalSpawned = 0;
     private boolean isSimulationMode = false;
+    
+    // Cache pour éviter les allocations répétées
+    private List<Enemy> nearbyEnemiesCache = new ArrayList<>();
 
     public EnemyManager(Playing playing, PathPoint start, PathPoint end) {
         this.playing = playing;
         this.start = start;
         this.end = end;
+        
+        orcPool = new ObjectPool<>(() -> new Orc(0, 0, 0, this, 0), 15000, 60000);
+        wolfPool = new ObjectPool<>(() -> new Wolf(0, 0, 0, this, 0), 15000, 60000);
+        batPool = new ObjectPool<>(() -> new Bat(0, 0, 0, this, 0), 15000, 60000);
+        knightPool = new ObjectPool<>(() -> new Knight(0, 0, 0, this, 0), 15000, 60000);
+        
+        spatialGrid = new SpatialGrid(0, new Rectangle(0, 0, 640, 640));
+        
         enemyImgs = new BufferedImage[4];
         loadEnemyImgs();
         loadSlowEffect();
@@ -56,26 +83,70 @@ public class EnemyManager {
     }
 
     public void update() {
-        for (int i = 0; i < enemies.size(); ) {
-            Enemy e = enemies.get(i);
-            if(e.isAlive()) {
+        // Reconstruire le spatial grid à chaque frame
+        spatialGrid.clear();
+        
+        // OPTIMISATION : Traiter par lots pour éviter les latences
+        int batchSize = Math.min(1000, activeEnemies.size()); // Traiter max 1000 ennemis par lot
+        
+        // Mise à jour et insertion dans le grid
+        for (int i = activeEnemies.size() - 1; i >= 0; i--) {
+            Enemy e = activeEnemies.get(i);
+            if (e.isAlive()) {
                 updateEnemyMove(e);
-            }
-            if (!e.isAlive()) {
-                enemies.remove(i);
+                // OPTIMISATION : N'insérer dans le spatial grid que tous les N ennemis
+                if (i % 3 == 0 || activeEnemies.size() < 10000) {
+                    spatialGrid.insert(e);
+                }
             } else {
-                i++;
+                // Retourner l'ennemi au pool approprié
+                returnEnemyToPool(e);
+                activeEnemies.remove(i);
             }
+        }
+    }
+    
+    /**
+     * Retourne un ennemi au pool approprié selon son type
+     */
+    private void returnEnemyToPool(Enemy e) {
+        switch (e.getEnemyType()) {
+            case ORC:
+                orcPool.free((Orc) e);
+                break;
+            case WOLF:
+                wolfPool.free((Wolf) e);
+                break;
+            case BAT:
+                batPool.free((Bat) e);
+                break;
+            case KNIGHT:
+                knightPool.free((Knight) e);
+                break;
         }
     }
 
     public void draw(Graphics g) {
-        for (int i = 0; i < enemies.size(); i++) {
-            Enemy e = enemies.get(i);
-            if(e.isAlive()) {
-                drawEnemy(e, g);
-                drawHealthBar(e, g);
-                drawEffects(e, g);
+        // Ne dessiner qu'un sous-ensemble d'ennemis si trop nombreux
+        int drawInterval = 1;
+        if (activeEnemies.size() > 50000) {
+            drawInterval = 4; // Dessiner 1 ennemi sur 4
+        } else if (activeEnemies.size() > 20000) {
+            drawInterval = 2; // Dessiner 1 ennemi sur 2
+        }
+        
+        for (int i = 0; i < activeEnemies.size(); i += drawInterval) {
+            Enemy e = activeEnemies.get(i);
+            if (e.isAlive()) {
+                float x = e.getX();
+                float y = e.getY();
+                if (x >= -32 && x <= 672 && y >= -32 && y <= 832) {
+                    drawEnemy(e, g);
+                    if (activeEnemies.size() < 30000) {
+                        drawHealthBar(e, g);
+                    }
+                    drawEffects(e, g);
+                }
             }
         }
     }
@@ -199,24 +270,31 @@ public class EnemyManager {
         int x = start.getxCord() * 32;
         int y = start.getyCord() * 32;
         int enemyIndex = isSimulationMode ? totalSpawned : currentWaveNumber;
+        
+        Enemy enemy = null;
+        
+        // Obtenir un ennemi du pool approprié
         switch (enemyType) {
             case ORC:
-                enemies.add(new Orc(x, y, 0, this, enemyIndex));
+                enemy = orcPool.obtain();
                 break;
             case WOLF:
-                enemies.add(new Wolf(x, y, 0, this, enemyIndex));
+                enemy = wolfPool.obtain();
                 break;
             case BAT:
-                enemies.add(new Bat(x, y, 0, this, enemyIndex));
+                enemy = batPool.obtain();
                 break;
             case KNIGHT:
-                enemies.add(new Knight(x, y, 0, this, enemyIndex));
-                break;
-            default:
+                enemy = knightPool.obtain();
                 break;
         }
-        if (isSimulationMode) {
-            totalSpawned++;
+        
+        if (enemy != null) {
+            enemy.reuse(x, y, enemyIndex);
+            activeEnemies.add(enemy);
+            if (isSimulationMode) {
+                totalSpawned++;
+            }
         }
     }
 
@@ -241,13 +319,21 @@ public class EnemyManager {
     }
 
     public ArrayList<Enemy> getEnemies() {
-        return enemies;
+        return activeEnemies;
+    }
+    
+    /**
+     * Retourne les ennemis proches d'une position donnée (optimisé avec spatial partitioning)
+     */
+    public List<Enemy> getEnemiesNear(float x, float y, int range) {
+        nearbyEnemiesCache.clear();
+        return spatialGrid.retrieve(nearbyEnemiesCache, x, y, range);
     }
 
     public int getAmountOfAliveEnemies() {
         int size = 0;
-        for(Enemy e : enemies) {
-            if(e.isAlive())
+        for (Enemy e : activeEnemies) {
+            if (e.isAlive())
                 size++;
         }
         return size;
@@ -264,7 +350,12 @@ public class EnemyManager {
     }
 
     public void reset() {
-        enemies.clear();
+        // Retourner tous les ennemis aux pools
+        for (Enemy e : activeEnemies) {
+            returnEnemyToPool(e);
+        }
+        activeEnemies.clear();
+        spatialGrid.clear();
         currentWaveNumber = 0;
         totalSpawned = 0;
     }

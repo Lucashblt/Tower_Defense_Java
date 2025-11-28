@@ -134,7 +134,7 @@ public class Constants {
                 case CANON_TOWER:
                     return 15;
                 case ARCHER_TOWER:
-                    return 5;
+                    return 6;
                 case WIZARD_TOWER:
                     return 1;
                 default:

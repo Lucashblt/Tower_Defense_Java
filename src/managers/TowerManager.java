@@ -35,14 +35,21 @@ public class TowerManager {
         if (playing == null) {
             return;
         }
-        ArrayList<Enemy> enemies = playing.getEnemyManager().getEnemies();
-        for(int i = 0; i < enemies.size(); i++){
-            Enemy e = enemies.get(i);
-            if(e.isAlive()) {
-                if(isEnemyInRange(t, e)){
-                    if(t.isCooldownOver()) {
+        
+        // Utiliser le spatial grid pour ne récupérer que les ennemis proches
+        // Au lieu de vérifier TOUS les ennemis, on ne vérifie que ceux dans le rayon de la tour
+        EnemyManager enemyManager = playing.getEnemyManager();
+        java.util.List<Enemy> nearbyEnemies = enemyManager.getEnemiesNear(t.getX(), t.getY(), (int)t.getRange());
+        
+        // Parcourir uniquement les ennemis proches (réduit drastiquement les itérations)
+        for (int i = 0; i < nearbyEnemies.size(); i++) {
+            Enemy e = nearbyEnemies.get(i);
+            if (e.isAlive()) {
+                if (isEnemyInRange(t, e)) {
+                    if (t.isCooldownOver()) {
                         playing.shootEnemy(t, e);
                         t.resetCooldown();
+                        return; // Une tour ne tire qu'une fois par cooldown
                     }
                 }
             }

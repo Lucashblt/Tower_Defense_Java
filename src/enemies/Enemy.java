@@ -2,12 +2,13 @@ package enemies;
 
 import java.awt.Rectangle;
 
+import helper.Poolable;
 import managers.EnemyManager;
 
 import static helper.Constants.Directions.*;
 import static helper.Constants.Enemies.*;
 
-public abstract class Enemy {
+public abstract class Enemy implements Poolable {
 
     protected float x, y;
     protected Rectangle bounds;
@@ -169,5 +170,35 @@ public abstract class Enemy {
 
     public boolean isSlowed() {
         return slowTick < slowTickLimit;
+    }
+
+    @Override
+    public boolean isActive() {
+        return alive;
+    }
+
+    @Override
+    public void reset() {
+        this.alive = false;
+        this.health = 0;
+        this.x = 0;
+        this.y = 0;
+        this.lastDir = -1;
+        this.slowTick = slowTickLimit;
+        this.bounds.setLocation(0, 0);
+    }
+
+    /**
+     * Réinitialise l'ennemi avec de nouvelles valeurs pour réutilisation
+     */
+    public void reuse(float x, float y, int enemyIndex) {
+        this.x = x;
+        this.y = y;
+        this.enemyIndex = enemyIndex;
+        this.alive = true;
+        this.lastDir = -1;
+        this.slowTick = slowTickLimit;
+        this.bounds.setLocation((int)x, (int)y);
+        setStartHealth();
     }
 }

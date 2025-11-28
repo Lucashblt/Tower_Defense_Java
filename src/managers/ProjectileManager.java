@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import enemies.Enemy;
 import helper.LoadSave;
+import helper.ObjectPool;
 import objects.Projectile;
 import objects.Tower;
 import scenes.Playing;
@@ -18,13 +19,25 @@ public class ProjectileManager {
 
 	private Playing playing;
 	private EnemyManager enemyManager;
-	private ArrayList<Projectile> projectiles = new ArrayList<>();
+	
+	// Object Pool pour les projectiles
+	private ObjectPool<Projectile> projectilePool;
+	private ArrayList<Projectile> activeProjectiles;
+	
 	private ArrayList<Explosion> explosions = new ArrayList<>();
 	private BufferedImage[] proj_imgs, explo_imgs;
-	private int proj_id = 0;
 
 	public ProjectileManager(Playing playing) {
 		this.playing = playing;
+		
+		// Pool de projectiles avec capacité adaptée
+		projectilePool = new ObjectPool<>(
+			() -> new Projectile(0, 0, 0, 0, 0, 0, 0, 0), 
+			2000, 
+			10000
+		);
+		activeProjectiles = new ArrayList<>();
+		
 		importImgs();
 	}
 
@@ -76,35 +89,53 @@ public class ProjectileManager {
 				rotate += 180;
 		}
 
-		for (Projectile p : projectiles)
-			if (!p.isActive())
-				if (p.getProjectileType() == type) {
-					p.reuse(t.getX() + 16, t.getY() + 16, xSpeed, ySpeed, t.getDamage(), rotate);
-					return;
-				}
-
-		projectiles.add(new Projectile(t.getX() + 16, t.getY() + 16, xSpeed, ySpeed, t.getDamage(), rotate, proj_id++, type));
+		// Utiliser le pool pour obtenir ou créer un projectile
+		Projectile p = projectilePool.obtain();
+		if (p != null) {
+			p.reuse((int)t.getX() + 16, (int)t.getY() + 16, xSpeed, ySpeed, t.getDamage(), rotate, type);
+			activeProjectiles.add(p);
+		}
 	}
 
 	public void update() {
-		for (Projectile p : projectiles)
+		// Mise à jour des projectiles actifs
+		for (int i = activeProjectiles.size() - 1; i >= 0; i--) {
+			Projectile p = activeProjectiles.get(i);
 			if (p.isActive()) {
 				p.move();
 				if (isProjHittingEnemy(p)) {
+					// Sauvegarder le type AVANT de désactiver (pour l'explosion)
+					int projType = p.getProjectileType();
+					Point2D.Float projPos = new Point2D.Float(p.getPos().x, p.getPos().y);
+					
 					p.setActive(false);
-					if (p.getProjectileType() == BOMB) {
-						explosions.add(new Explosion(p.getPos()));
+					
+					// Créer l'explosion si c'est une bombe
+					if (projType == BOMB) {
+						explosions.add(new Explosion(projPos));
 						explodeOnEnemies(p);
 					}
 				} else if (isProjOutsideBounds(p)) {
 					p.setActive(false);
 				}
 			}
+			
+			// Retourner au pool si inactif
+			if (!p.isActive()) {
+				projectilePool.free(p);
+				activeProjectiles.remove(i);
+			}
+		}
 
-		for (Explosion e : explosions)
-			if (e.getIndex() < 7)
+		// Mise à jour des explosions
+		for (int i = explosions.size() - 1; i >= 0; i--) {
+			Explosion e = explosions.get(i);
+			if (e.getIndex() < 7) {
 				e.update();
-
+			} else {
+				explosions.remove(i);
+			}
+		}
 	}
 
 	private void explodeOnEnemies(Projectile p) {
@@ -173,9 +204,8 @@ public class ProjectileManager {
 	public void draw(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 
-		// Créer une copie pour éviter ConcurrentModificationException
-		ArrayList<Projectile> projectilesCopy = new ArrayList<>(projectiles);
-		for (Projectile p : projectilesCopy)
+		for (int i = 0; i < activeProjectiles.size(); i++) {
+			Projectile p = activeProjectiles.get(i);
 			if (p.isActive()) {
 				if (p.getProjectileType() == ARROW) {
 					g2d.translate(p.getPos().x, p.getPos().y);
@@ -187,17 +217,18 @@ public class ProjectileManager {
 					g2d.drawImage(proj_imgs[p.getProjectileType()], (int) p.getPos().x - 16, (int) p.getPos().y - 16, null);
 				}
 			}
+		}
 
 		drawExplosions(g2d);
-
 	}
 
 	private void drawExplosions(Graphics2D g2d) {
-		// Create a copy to avoid ConcurrentModificationException
-		ArrayList<Explosion> explosionsCopy = new ArrayList<>(explosions);
-		for (Explosion e : explosionsCopy)
+		// Itération directe sans copie
+		for (int i = 0; i < explosions.size(); i++) {
+			Explosion e = explosions.get(i);
 			if (e.getIndex() < 7)
 				g2d.drawImage(explo_imgs[e.getIndex()], (int) e.getPos().x - 16, (int) e.getPos().y - 16, null);
+		}
 	}
 
 	private int getProjType(Tower t) {
@@ -239,19 +270,15 @@ public class ProjectileManager {
 	}
 
 	public int getProjectileCount() {
-		int count = 0;
-		for (Projectile p : projectiles) {
-			if (p.isActive()) {
-				count++;
-			}
-		}
-		return count;
+		return activeProjectiles.size();
 	}
 
 	public void reset() {
-		projectiles.clear();
+		// Retourner tous les projectiles au pool
+		for (Projectile p : activeProjectiles) {
+			projectilePool.free(p);
+		}
+		activeProjectiles.clear();
 		explosions.clear();
-
-		proj_id = 0;
 	}
 }

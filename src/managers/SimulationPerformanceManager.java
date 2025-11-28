@@ -32,8 +32,10 @@ public class SimulationPerformanceManager {
     private Random random;
     private boolean simulationRunning = false;
     private boolean isPaused = false;
-    private static final long SIMULATION_DURATION = 5 * 60 * 1000; // 5 minutes en millisecondes
-    private static final int ENEMIES_PER_UPDATE = 10; // Spawner 10 ennemis par update pour atteindre 25k vivants
+    private static final long SIMULATION_DURATION = 15 * 60 * 1000;
+    private static final long TARGET_TIME_FOR_100K = 10 * 60 * 1000; // 10 minutes pour atteindre 100k vivants
+    private static final int TARGET_ALIVE_ENEMIES = 100000; // Objectif: 100k ennemis vivants à 10 min
+    private int updateCounter = 0; // Compteur pour optimisations adaptatives 
     
     public SimulationPerformanceManager(SimulationPerformance simulationPerformance, TileManager tileManager) {
         this.simulationPerformance = simulationPerformance;
@@ -167,45 +169,61 @@ public class SimulationPerformanceManager {
             return;
         }
         
+        updateCounter++;
         long currentTime = System.currentTimeMillis();
         long elapsedTime = currentTime - simulationStartTime;
         
-        // Vérifier si la simulation est terminée (5 minutes)
+        // Vérifier si la simulation est terminée (15 minutes)
         if (elapsedTime >= SIMULATION_DURATION) {
             endSimulation();
             return;
         }
         
+        // Logger les performances toutes les secondes
+        if (updateCounter % 60 == 0) { // 60 updates = 1 seconde
+            logPerformance(elapsedTime / 1000);
+        }
+        
         // Spawner en continu
         handleSpawning(currentTime);
         
-        // Mettre à jour les managers
+        // Mettre à jour les managers à chaque frame
         enemyManager.update();
         updateTowersAndShoot();
         projectileManager.update();
-        
-        // Logger les performances toutes les secondes
-        if (elapsedTime % 1000 < 17) { // Approximativement chaque seconde
-            logPerformance(elapsedTime / 1000);
-        }
     }
     
     private void updateTowersAndShoot() {
-        ArrayList<Tower> towers = towerManager.getTowers();
         // Créer une copie pour éviter ConcurrentModificationException
-        ArrayList<Enemy> enemies = new ArrayList<>(enemyManager.getEnemies());
+        ArrayList<Tower> towers = new ArrayList<>(towerManager.getTowers());
         
-        for (Tower t : towers) {
+        // OPTIMISATION : Limiter le nombre de tours actives si trop d'ennemis
+        int maxTowersToUpdate = towers.size();
+        // int aliveEnemies = enemyManager.getAmountOfAliveEnemies();
+        // if (aliveEnemies > 100000) {
+        //     maxTowersToUpdate = Math.min(30, towers.size()); // Seulement 30 tours
+        // } else if (aliveEnemies > 50000) {
+        //     maxTowersToUpdate = Math.min(60, towers.size()); // Seulement 60 tours
+        // }
+        
+        for (int towerIndex = 0; towerIndex < maxTowersToUpdate; towerIndex++) {
+            Tower t = towers.get(towerIndex);
             t.update();
-            // Attaquer les ennemis proches
-            for (Enemy e : enemies) {
+            
+            if (!t.isCooldownOver()) {
+                continue; // Skip si cooldown pas fini
+            }
+            
+            // Utiliser le spatial grid pour récupérer SEULEMENT les ennemis proches
+            java.util.List<Enemy> nearbyEnemies = enemyManager.getEnemiesNear(t.getX(), t.getY(), (int)t.getRange());
+            
+            // Attaquer le premier ennemi à portée
+            for (Enemy e : nearbyEnemies) {
                 if (e.isAlive()) {
                     if (isEnemyInRange(t, e)) {
-                        if (t.isCooldownOver()) {
-                            projectileManager.newProjectile(t, e);
-                            t.resetCooldown();
-                            break; // Une seule cible à la fois
-                        }
+                        projectileManager.newProjectile(t, e);
+                        t.resetCooldown();
+                        break; // Une seule cible à la fois
                     }
                 }
             }
@@ -213,13 +231,44 @@ public class SimulationPerformanceManager {
     }
     
     private boolean isEnemyInRange(Tower t, Enemy e) {
-        int range = helper.Utilz.getHypoDistance((int)t.getX(), (int)t.getY(), (int)e.getX(), (int)e.getY());
-        return range <= t.getRange();
+        // Optimisation : Comparer les carrés des distances pour éviter sqrt()
+        // (x2-x1)² + (y2-y1)² <= range²
+        int dx = (int)t.getX() - (int)e.getX();
+        int dy = (int)t.getY() - (int)e.getY();
+        int distanceSquared = dx * dx + dy * dy;
+        return distanceSquared <= t.getRangeSquared();
     }
     
     private void handleSpawning(long currentTime) {
-        // Spawn massif : 10 ennemis par update (60 updates/sec = 600 ennemis/sec)
-        for (int i = 0; i < ENEMIES_PER_UPDATE; i++) {
+        // Calculer le temps écoulé et le ratio de progression
+        long elapsedTime = currentTime - simulationStartTime;
+        double progressRatio = Math.min(1.0, (double)elapsedTime / TARGET_TIME_FOR_100K);
+        
+        // Calculer le nombre cible d'ennemis vivants basé sur la progression
+        int targetAliveEnemies = (int)(TARGET_ALIVE_ENEMIES * progressRatio);
+        int currentAliveEnemies = enemyManager.getAmountOfAliveEnemies();
+        
+        // Calculer combien d'ennemis spawner pour atteindre la cible
+        // On ajoute un buffer pour compenser les morts
+        int deficit = targetAliveEnemies - currentAliveEnemies;
+        
+        // Spawn adaptatif : plus on est loin de la cible, plus on spawn
+        int enemiesToSpawn = 0;
+        if (deficit > 10000) {
+            enemiesToSpawn = 50; // Très loin de la cible
+        } else if (deficit > 5000) {
+            enemiesToSpawn = 30; // Loin de la cible
+        } else if (deficit > 1000) {
+            enemiesToSpawn = 15; // Un peu loin
+        } else if (deficit > 0) {
+            enemiesToSpawn = 8; // Proche de la cible
+        } else if (deficit > -5000) {
+            enemiesToSpawn = 3; // Au-dessus mais on maintient
+        }
+        // Si très au-dessus (deficit < -5000), on ne spawn pas
+        
+        // Spawner les ennemis
+        for (int i = 0; i < enemiesToSpawn; i++) {
             spawnEnemy();
         }
     }
@@ -272,7 +321,7 @@ public class SimulationPerformanceManager {
     }
     
     public void draw(Graphics g) {
-        // Dessiner le niveau
+        // Dessiner le niveau (optimisé : pas de changement nécessaire, c'est statique)
         for (int y = 0; y < level.length; y++) {
             for (int x = 0; x < level[y].length; x++) {
                 int id = level[y][x];
@@ -280,7 +329,7 @@ public class SimulationPerformanceManager {
             }
         }
         
-        // Dessiner les éléments du jeu
+        // Dessiner les éléments du jeu (déjà optimisés dans les managers)
         enemyManager.draw(g);
         towerManager.draw(g);
         projectileManager.draw(g);

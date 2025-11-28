@@ -65,7 +65,7 @@ public class SimulationBar extends Bar {
         long minutes = seconds / 60;
         long secs = seconds % 60;
         
-        String timeText = String.format("Temps: %02d:%02d / 05:00", minutes, secs);
+        String timeText = String.format("Temps: %02d:%02d / %02d:%02d", minutes, secs, 15, 0);
         g.drawString(timeText, x + 250, y + 25);
     }
     
